@@ -3,6 +3,8 @@ package com.daqem.arc.networking;
 import com.daqem.arc.Arc;
 
 import dev.architectury.networking.NetworkManager;
+import dev.architectury.utils.Env;
+import dev.architectury.utils.EnvExecutor;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 
 public interface ArcNetworking {
@@ -13,11 +15,24 @@ public interface ArcNetworking {
     CustomPacketPayload.Type<ClientboundSyncPlayerActionHoldersPacket> CLIENTBOUND_SYNC_PLAYER_ACTION_HOLDERS = new CustomPacketPayload.Type<>(Arc.getId("clientbound_sync_player_action_holders"));
     CustomPacketPayload.Type<ClientboundActionHoldersScreenPacket> CLIENTBOUND_ACTION_HOLDERS_SCREEN_PACKET = new CustomPacketPayload.Type<>(Arc.getId("clientbound_action_holders_screen_packet"));
 
-    static void init() {
+    static void initClient() {
         NetworkManager.registerReceiver(NetworkManager.Side.S2C, CLIENTBOUND_UPDATE_ACTIONS, ClientboundUpdateActionsPacket.STREAM_CODEC, ClientboundUpdateActionsPacket::handleClientSide);
         NetworkManager.registerReceiver(NetworkManager.Side.S2C, CLIENTBOUND_UPDATE_ACTION_HOLDERS, ClientboundUpdateActionHoldersPacket.STREAM_CODEC, ClientboundUpdateActionHoldersPacket::handleClientSide);
         NetworkManager.registerReceiver(NetworkManager.Side.S2C, CLIENTBOUND_ACTION_SCREEN, ClientboundActionScreenPacket.STREAM_CODEC, ClientboundActionScreenPacket::handleClientSide);
         NetworkManager.registerReceiver(NetworkManager.Side.S2C, CLIENTBOUND_SYNC_PLAYER_ACTION_HOLDERS, ClientboundSyncPlayerActionHoldersPacket.STREAM_CODEC, ClientboundSyncPlayerActionHoldersPacket::handleClientSide);
         NetworkManager.registerReceiver(NetworkManager.Side.S2C, CLIENTBOUND_ACTION_HOLDERS_SCREEN_PACKET, ClientboundActionHoldersScreenPacket.STREAM_CODEC, ClientboundActionHoldersScreenPacket::handleClientSide);
+    }
+
+    static void initServer() {
+        NetworkManager.registerS2CPayloadType(CLIENTBOUND_UPDATE_ACTIONS, ClientboundUpdateActionsPacket.STREAM_CODEC);
+        NetworkManager.registerS2CPayloadType(CLIENTBOUND_UPDATE_ACTION_HOLDERS, ClientboundUpdateActionHoldersPacket.STREAM_CODEC);
+        NetworkManager.registerS2CPayloadType(CLIENTBOUND_ACTION_SCREEN, ClientboundActionScreenPacket.STREAM_CODEC);
+        NetworkManager.registerS2CPayloadType(CLIENTBOUND_SYNC_PLAYER_ACTION_HOLDERS, ClientboundSyncPlayerActionHoldersPacket.STREAM_CODEC);
+        NetworkManager.registerS2CPayloadType(CLIENTBOUND_ACTION_HOLDERS_SCREEN_PACKET, ClientboundActionHoldersScreenPacket.STREAM_CODEC);
+    }
+
+    static void init() {
+        EnvExecutor.runInEnv(Env.CLIENT, () -> ArcNetworking::initClient);
+        EnvExecutor.runInEnv(Env.SERVER, () -> ArcNetworking::initServer);
     }
 }

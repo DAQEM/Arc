@@ -23,15 +23,5 @@ public class ArcClient {
     }
 
     private static void registerEvents() {
-        ClientRawInputEvent.KEY_PRESSED.register((client, keyCode, scanCode, action, modifiers) -> {
-            if (Arc.isDebugEnvironment()) {
-                if (keyCode == GLFW.GLFW_KEY_O && action == 1) {
-                    ActionHolderManager actionHolderManager = ActionHolderManager.getInstance();
-                    List<IAction> actions = actionHolderManager.getActions();
-                    Minecraft.getInstance().setScreen(new ActionScreen(actions, actions.get(0)));
-                }
-            }
-            return EventResult.pass();
-        });
     }
 }
