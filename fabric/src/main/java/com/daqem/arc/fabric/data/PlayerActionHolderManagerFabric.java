@@ -8,6 +8,6 @@ public class PlayerActionHolderManagerFabric extends PlayerActionHolderManager i
 
     @Override
     public ResourceLocation getFabricId() {
-        return new ResourceLocation("arc", "please_do_not_use_this");
+        return ResourceLocation.fromNamespaceAndPath("arc", "please_do_not_use_this");
     }
 }

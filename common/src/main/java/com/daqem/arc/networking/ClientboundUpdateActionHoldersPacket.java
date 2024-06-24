@@ -4,40 +4,50 @@ import com.daqem.arc.api.action.holder.ActionHolderManager;
 import com.daqem.arc.api.action.holder.IActionHolder;
 import com.daqem.arc.api.action.holder.serializer.IActionHolderSerializer;
 import dev.architectury.networking.NetworkManager;
-import dev.architectury.networking.simple.BaseS2CMessage;
-import dev.architectury.networking.simple.MessageType;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public class ClientboundUpdateActionHoldersPacket extends BaseS2CMessage {
+public class ClientboundUpdateActionHoldersPacket implements CustomPacketPayload {
 
     private final List<IActionHolder> actionHolders;
+
+    public static final StreamCodec<RegistryFriendlyByteBuf, ClientboundUpdateActionHoldersPacket> STREAM_CODEC = new StreamCodec<>() {
+        @Override
+        public @NotNull ClientboundUpdateActionHoldersPacket decode(RegistryFriendlyByteBuf buf) {
+            return new ClientboundUpdateActionHoldersPacket(buf);
+        }
+
+        @Override
+        public void encode(RegistryFriendlyByteBuf buf, ClientboundUpdateActionHoldersPacket packet) {
+            buf.writeCollection(packet.actionHolders,
+                    (friendlyByteBuf, action) -> IActionHolderSerializer.toNetwork(action, (RegistryFriendlyByteBuf) friendlyByteBuf));
+        }
+    };
 
     public ClientboundUpdateActionHoldersPacket(List<IActionHolder> actionHolders) {
         this.actionHolders = actionHolders;
     }
 
-    public ClientboundUpdateActionHoldersPacket(FriendlyByteBuf friendlyByteBuf) {
-        this.actionHolders = friendlyByteBuf.readList(IActionHolderSerializer::fromNetwork);
+    public ClientboundUpdateActionHoldersPacket(RegistryFriendlyByteBuf friendlyByteBuf) {
+        this.actionHolders = friendlyByteBuf.readList(friendlyByteBuf1 -> IActionHolderSerializer.fromNetwork((RegistryFriendlyByteBuf) friendlyByteBuf1));
     }
 
-    @Override
-    public MessageType getType() {
-        return ArcNetworking.CLIENTBOUND_UPDATE_ACTION_HOLDERS;
-    }
-
-    @Override
-    public void write(FriendlyByteBuf buf) {
-        buf.writeCollection(actionHolders,
-                (friendlyByteBuf, action) -> IActionHolderSerializer.toNetwork(action, friendlyByteBuf));
-    }
-
-    @Override
-    public void handle(NetworkManager.PacketContext context) {
+    @Environment(EnvType.CLIENT)
+    public static void handleClientSide(ClientboundUpdateActionHoldersPacket packet, NetworkManager.PacketContext context) {
         if (!Minecraft.getInstance().isLocalServer()) {
-            ActionHolderManager.getInstance().registerActionHolders(actionHolders);
+            ActionHolderManager.getInstance().registerActionHolders(packet.actionHolders);
         }
+    }
+
+    @Override
+    public @NotNull Type<? extends CustomPacketPayload> type() {
+        return ArcNetworking.CLIENTBOUND_UPDATE_ACTION_HOLDERS;
     }
 }

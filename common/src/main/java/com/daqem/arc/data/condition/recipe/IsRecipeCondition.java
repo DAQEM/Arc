@@ -21,7 +21,7 @@ public abstract class IsRecipeCondition<T extends Recipe<?>> extends AbstractCon
         if (server != null) {
             List<T> recipes = server.getRecipeManager().getRecipes().stream()
                     .filter(recipeClass::isInstance)
-                    .map(r -> (T) r)
+                    .map(r -> (T) r.value())
                     .toList();
             for (T r : recipes) {
                 if (r.getResultItem(server.registryAccess()).getItem().equals(smeltingRecipe.getResultItem(server.registryAccess()).getItem())) {

@@ -8,7 +8,7 @@ import com.daqem.arc.api.condition.type.ConditionType;
 import com.daqem.arc.api.condition.type.IConditionType;
 import com.google.gson.*;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
@@ -49,16 +49,16 @@ public class BlockCondition extends AbstractCondition {
         }
 
         @Override
-        public BlockCondition fromNetwork(ResourceLocation location, FriendlyByteBuf friendlyByteBuf, boolean inverted) {
+        public BlockCondition fromNetwork(ResourceLocation location, RegistryFriendlyByteBuf friendlyByteBuf, boolean inverted) {
             return new BlockCondition(
                     inverted,
-                    friendlyByteBuf.readById(BuiltInRegistries.BLOCK));
+                    BuiltInRegistries.BLOCK.byId(friendlyByteBuf.readVarInt()));
         }
 
         @Override
-        public void toNetwork(FriendlyByteBuf friendlyByteBuf, BlockCondition type) {
+        public void toNetwork(RegistryFriendlyByteBuf friendlyByteBuf, BlockCondition type) {
             IConditionSerializer.super.toNetwork(friendlyByteBuf, type);
-            friendlyByteBuf.writeId(BuiltInRegistries.BLOCK, type.block);
+            friendlyByteBuf.writeVarInt(BuiltInRegistries.BLOCK.getId(type.block));
         }
     }
 }

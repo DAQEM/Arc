@@ -6,7 +6,7 @@ import com.daqem.arc.api.condition.serializer.IConditionSerializer;
 import com.daqem.arc.api.condition.type.ConditionType;
 import com.daqem.arc.api.condition.type.IConditionType;
 import com.google.gson.*;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.SmeltingRecipe;
@@ -45,12 +45,12 @@ public class IsSmokingRecipeCondition extends IsRecipeCondition<SmokingRecipe> {
         }
 
         @Override
-        public IsSmokingRecipeCondition fromNetwork(ResourceLocation location, FriendlyByteBuf friendlyByteBuf, boolean inverted) {
+        public IsSmokingRecipeCondition fromNetwork(ResourceLocation location, RegistryFriendlyByteBuf friendlyByteBuf, boolean inverted) {
             return new IsSmokingRecipeCondition(inverted);
         }
 
         @Override
-        public void toNetwork(FriendlyByteBuf friendlyByteBuf, IsSmokingRecipeCondition type) {
+        public void toNetwork(RegistryFriendlyByteBuf friendlyByteBuf, IsSmokingRecipeCondition type) {
             IConditionSerializer.super.toNetwork(friendlyByteBuf, type);
         }
     }

@@ -9,9 +9,11 @@ import com.daqem.arc.config.ArcCommonConfig;
 import com.daqem.arc.data.ActionManager;
 import com.daqem.arc.networking.ClientboundUpdateActionHoldersPacket;
 import com.daqem.arc.networking.ClientboundUpdateActionsPacket;
+import dev.architectury.networking.NetworkManager;
 import net.minecraft.network.Connection;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.network.CommonListenerCookie;
 import net.minecraft.server.players.PlayerList;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -30,7 +32,7 @@ public abstract class PlayerListMixin {
     @Inject(at = @At("TAIL"), method = "reloadResources")
     private void reloadResources(CallbackInfo ci) {
         for (ServerPlayer player : this.players) {
-            if (ArcCommonConfig.isDebug.get()) {
+            if (Arc.isDebugEnvironment()) {
                 Arc.LOGGER.info("Sending actions to player {}", player.getName().getString());
             }
             if (player instanceof ArcServerPlayer arcServerPlayer) {
@@ -39,15 +41,16 @@ public abstract class PlayerListMixin {
                 List<IActionHolder> actionHolders = ActionHolderManager.getInstance().getActionHolders(actionHolderLocations);
                 arcServerPlayer.arc$addActionHolders(actionHolders);
             }
-            new ClientboundUpdateActionsPacket(ActionHolderManager.getInstance().getActions()).sendTo(player);
-            new ClientboundUpdateActionHoldersPacket(ActionHolderManager.getInstance().getActionHolders()).sendTo(player);
+            NetworkManager.sendToPlayer(player, new ClientboundUpdateActionsPacket(ActionHolderManager.getInstance().getActions()));
+            NetworkManager.sendToPlayer(player, new ClientboundUpdateActionHoldersPacket(ActionHolderManager.getInstance().getActionHolders()));
         }
     }
 
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/server/players/PlayerList;sendPlayerPermissionLevel(Lnet/minecraft/server/level/ServerPlayer;)V", shift = At.Shift.BEFORE), method = "placeNewPlayer")
-    private void placeNewPlayer(Connection connection, ServerPlayer serverPlayer, CallbackInfo ci) {
-        new ClientboundUpdateActionsPacket(ActionHolderManager.getInstance().getActions()).sendTo(serverPlayer);
-        new ClientboundUpdateActionHoldersPacket(ActionHolderManager.getInstance().getActionHolders()).sendTo(serverPlayer);
+    private void placeNewPlayer(Connection connection, ServerPlayer serverPlayer, CommonListenerCookie commonListenerCookie, CallbackInfo ci) {
+        NetworkManager.sendToPlayer(serverPlayer, new ClientboundUpdateActionsPacket(ActionHolderManager.getInstance().getActions()));
+        NetworkManager.sendToPlayer(serverPlayer, new ClientboundUpdateActionHoldersPacket(ActionHolderManager.getInstance().getActionHolders()));
+
         if (serverPlayer instanceof ArcServerPlayer arcServerPlayer) {
             arcServerPlayer.arc$syncActionHoldersWithClient();
         }

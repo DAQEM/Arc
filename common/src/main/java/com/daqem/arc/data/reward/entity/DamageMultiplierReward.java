@@ -7,7 +7,7 @@ import com.daqem.arc.api.reward.serializer.IRewardSerializer;
 import com.daqem.arc.api.reward.type.IRewardType;
 import com.daqem.arc.api.reward.type.RewardType;
 import com.google.gson.JsonObject;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.GsonHelper;
 
@@ -46,7 +46,7 @@ public class DamageMultiplierReward extends AbstractReward {
         }
 
         @Override
-        public DamageMultiplierReward fromNetwork(FriendlyByteBuf friendlyByteBuf, double chance, int priority) {
+        public DamageMultiplierReward fromNetwork(RegistryFriendlyByteBuf friendlyByteBuf, double chance, int priority) {
             return new DamageMultiplierReward(
                     chance,
                     priority,
@@ -54,7 +54,7 @@ public class DamageMultiplierReward extends AbstractReward {
         }
 
         @Override
-        public void toNetwork(FriendlyByteBuf friendlyByteBuf, DamageMultiplierReward type) {
+        public void toNetwork(RegistryFriendlyByteBuf friendlyByteBuf, DamageMultiplierReward type) {
             IRewardSerializer.super.toNetwork(friendlyByteBuf, type);
             friendlyByteBuf.writeDouble(type.multiplier);
         }

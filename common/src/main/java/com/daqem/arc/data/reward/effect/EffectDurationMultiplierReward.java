@@ -9,7 +9,7 @@ import com.daqem.arc.api.reward.type.IRewardType;
 import com.daqem.arc.api.reward.type.RewardType;
 import com.google.gson.*;
 import com.mojang.authlib.GameProfile;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.GsonHelper;
@@ -39,7 +39,7 @@ public class EffectDurationMultiplierReward extends AbstractReward {
         if (effect != null) {
             if (actionData.getPlayer().arc$getPlayer() instanceof ServerPlayer player){
                 MobEffectInstance newEffect = new MobEffectInstance(effect.getEffect(), Mth.floor(effect.getDuration() * multiplier), effect.getAmplifier(), effect.isAmbient(), effect.isVisible());
-                player.addEffect(newEffect, new ServerPlayer(Objects.requireNonNull(player.getServer()), player.serverLevel(), new GameProfile(UUID.randomUUID(), "a")));
+                player.addEffect(newEffect, new ServerPlayer(Objects.requireNonNull(player.getServer()), player.serverLevel(), new GameProfile(UUID.randomUUID(), "a"), player.clientInformation()));
             }
         }
         return new ActionResult();
@@ -61,7 +61,7 @@ public class EffectDurationMultiplierReward extends AbstractReward {
         }
 
         @Override
-        public EffectDurationMultiplierReward fromNetwork(FriendlyByteBuf friendlyByteBuf, double chance, int priority) {
+        public EffectDurationMultiplierReward fromNetwork(RegistryFriendlyByteBuf friendlyByteBuf, double chance, int priority) {
             return new EffectDurationMultiplierReward(
                     chance,
                     priority,
@@ -69,7 +69,7 @@ public class EffectDurationMultiplierReward extends AbstractReward {
         }
 
         @Override
-        public void toNetwork(FriendlyByteBuf friendlyByteBuf, EffectDurationMultiplierReward type) {
+        public void toNetwork(RegistryFriendlyByteBuf friendlyByteBuf, EffectDurationMultiplierReward type) {
             IRewardSerializer.super.toNetwork(friendlyByteBuf, type);
             friendlyByteBuf.writeDouble(type.multiplier);
         }

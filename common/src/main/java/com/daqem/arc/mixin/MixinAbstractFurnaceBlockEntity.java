@@ -28,7 +28,7 @@ public abstract class MixinAbstractFurnaceBlockEntity {
             this.recipesUsed.forEach((recipeId, recipeCount) -> {
                 serverLevel.getRecipeManager().byKey(recipeId).ifPresent((recipe) -> {
                     for (int i = 0; i < recipeCount; i++) {
-                        PlayerEvents.onSmeltItem(arcServerPlayer, recipe, recipe.getResultItem(arcServerPlayer.arc$getServerPlayer().getServer().registryAccess()),
+                        PlayerEvents.onSmeltItem(arcServerPlayer, recipe.value(), recipe.value().getResultItem(arcServerPlayer.arc$getServerPlayer().getServer().registryAccess()),
                                 ((AbstractFurnaceBlockEntity) (Object) this).getBlockPos(), serverLevel);
                     }
                 });

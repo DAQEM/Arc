@@ -38,7 +38,7 @@ public abstract class ActionManager extends SimpleJsonResourceReloadListener {
 
         List<IAction> actions = new ArrayList<>();
 
-        if (!ArcCommonConfig.isDebug.get()) {
+        if (!Arc.isDebugEnvironment()) {
             map.entrySet().removeIf(entry -> entry.getKey().getNamespace().equals("debug"));
         }
 
@@ -66,7 +66,7 @@ public abstract class ActionManager extends SimpleJsonResourceReloadListener {
      */
     public static IAction fromJson(ResourceLocation location, JsonObject jsonObject) {
         String type = GsonHelper.getAsString(jsonObject, "type");
-        return ArcRegistry.ACTION.getOptional(new ResourceLocation(type))
+        return ArcRegistry.ACTION.getOptional(ResourceLocation.parse(type))
                 .orElseThrow(() -> new JsonSyntaxException("Invalid or unsupported action type '" + type + "'"))
                 .getSerializer().fromJson(location, jsonObject);
     }

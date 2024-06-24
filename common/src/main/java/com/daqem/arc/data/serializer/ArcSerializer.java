@@ -5,12 +5,12 @@ import com.daqem.arc.registry.ArcRegistry;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.datafixers.util.Pair;
+import com.mojang.serialization.JsonOps;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.TagParser;
+import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
@@ -23,7 +23,6 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -32,20 +31,12 @@ import java.util.stream.StreamSupport;
 public interface ArcSerializer {
 
     default ResourceLocation getResourceLocation(JsonObject jsonObject, String elementName){
-        return new ResourceLocation(getString(jsonObject, elementName));
+        return ResourceLocation.parse(getString(jsonObject, elementName));
     }
 
-    default @Nullable CompoundTag getCompoundTag(JsonObject jsonObject){
-        CompoundTag tag = null;
-        if (jsonObject.has("tag")) {
-            String tagString = jsonObject.get("tag").getAsString();
-            try {
-                tag = TagParser.parseTag(tagString);
-            } catch (CommandSyntaxException e) {
-                throw new JsonParseException("Failed to parse tag ( " + tagString + " )");
-            }
-        }
-        return tag;
+    default ItemStack getItemStack(JsonElement element){
+        return ItemStack.CODEC.decode(JsonOps.INSTANCE, element).result()
+                .orElseThrow(() -> new JsonParseException("Invalid item stack")).getFirst();
     }
 
     default IActionHolderType<?> getHolderType(JsonObject jsonObject, String elementName){
@@ -137,7 +128,7 @@ public interface ArcSerializer {
         String dimensionName = getString(jsonObject, elementName);
         ResourceKey<Level> dimension;
         try {
-            dimension = ResourceKey.create(Registries.DIMENSION, new ResourceLocation(dimensionName));
+            dimension = ResourceKey.create(Registries.DIMENSION, ResourceLocation.parse(dimensionName));
         } catch (IllegalArgumentException e) {
             throw new JsonParseException("Invalid dimension, expected to find a valid dimension.");
         }

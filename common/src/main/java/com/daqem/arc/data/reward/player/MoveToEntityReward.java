@@ -8,7 +8,7 @@ import com.daqem.arc.api.reward.serializer.IRewardSerializer;
 import com.daqem.arc.api.reward.type.IRewardType;
 import com.daqem.arc.api.reward.type.RewardType;
 import com.google.gson.JsonObject;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.entity.Entity;
@@ -55,7 +55,7 @@ public class MoveToEntityReward extends AbstractReward {
         }
 
         @Override
-        public MoveToEntityReward fromNetwork(FriendlyByteBuf friendlyByteBuf, double chance, int priority) {
+        public MoveToEntityReward fromNetwork(RegistryFriendlyByteBuf friendlyByteBuf, double chance, int priority) {
             return new MoveToEntityReward(
                     chance,
                     priority,
@@ -63,7 +63,7 @@ public class MoveToEntityReward extends AbstractReward {
         }
 
         @Override
-        public void toNetwork(FriendlyByteBuf friendlyByteBuf, MoveToEntityReward type) {
+        public void toNetwork(RegistryFriendlyByteBuf friendlyByteBuf, MoveToEntityReward type) {
             IRewardSerializer.super.toNetwork(friendlyByteBuf, type);
             friendlyByteBuf.writeFloat(type.force);
         }

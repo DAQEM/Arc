@@ -8,7 +8,7 @@ import com.daqem.arc.api.reward.serializer.IRewardSerializer;
 import com.daqem.arc.api.reward.type.IRewardType;
 import com.daqem.arc.api.reward.type.RewardType;
 import com.google.gson.*;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.GsonHelper;
@@ -58,7 +58,7 @@ public class ExpReward extends AbstractReward {
         }
 
         @Override
-        public ExpReward fromNetwork(FriendlyByteBuf friendlyByteBuf, double chance, int priority) {
+        public ExpReward fromNetwork(RegistryFriendlyByteBuf friendlyByteBuf, double chance, int priority) {
             return new ExpReward(
                     chance,
                     priority,
@@ -67,7 +67,7 @@ public class ExpReward extends AbstractReward {
         }
 
         @Override
-        public void toNetwork(FriendlyByteBuf friendlyByteBuf, ExpReward type) {
+        public void toNetwork(RegistryFriendlyByteBuf friendlyByteBuf, ExpReward type) {
             IRewardSerializer.super.toNetwork(friendlyByteBuf, type);
             friendlyByteBuf.writeInt(type.min);
             friendlyByteBuf.writeInt(type.max);

@@ -9,7 +9,7 @@ import com.daqem.arc.api.reward.type.IRewardType;
 import com.daqem.arc.api.reward.type.RewardType;
 import com.google.gson.*;
 import com.mojang.authlib.GameProfile;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.GsonHelper;
@@ -39,7 +39,7 @@ public class EffectAmplifierAdditionReward extends AbstractReward {
         if (effect != null) {
             if (actionData.getPlayer().arc$getPlayer() instanceof ServerPlayer player){
                 MobEffectInstance newEffect = new MobEffectInstance(effect.getEffect(), effect.getDuration(), Mth.floor(effect.getAmplifier() + addition), effect.isAmbient(), effect.isVisible());
-                player.addEffect(newEffect, new ServerPlayer(Objects.requireNonNull(player.getServer()), player.serverLevel(), new GameProfile(UUID.randomUUID(), "a")));
+                player.addEffect(newEffect, new ServerPlayer(Objects.requireNonNull(player.getServer()), player.serverLevel(), new GameProfile(UUID.randomUUID(), "a"), player.clientInformation()));
             }
         }
         return new ActionResult();
@@ -61,7 +61,7 @@ public class EffectAmplifierAdditionReward extends AbstractReward {
         }
 
         @Override
-        public EffectAmplifierAdditionReward fromNetwork(FriendlyByteBuf friendlyByteBuf, double chance, int priority) {
+        public EffectAmplifierAdditionReward fromNetwork(RegistryFriendlyByteBuf friendlyByteBuf, double chance, int priority) {
             return new EffectAmplifierAdditionReward(
                     chance,
                     priority,
@@ -69,7 +69,7 @@ public class EffectAmplifierAdditionReward extends AbstractReward {
         }
 
         @Override
-        public void toNetwork(FriendlyByteBuf friendlyByteBuf, EffectAmplifierAdditionReward type) {
+        public void toNetwork(RegistryFriendlyByteBuf friendlyByteBuf, EffectAmplifierAdditionReward type) {
             IRewardSerializer.super.toNetwork(friendlyByteBuf, type);
             friendlyByteBuf.writeInt(type.addition);
         }

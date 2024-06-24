@@ -8,7 +8,7 @@ import com.daqem.arc.api.condition.type.ConditionType;
 import com.daqem.arc.api.condition.type.IConditionType;
 import com.daqem.arc.registry.ArcRegistry;
 import com.google.gson.*;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
 
@@ -57,7 +57,7 @@ public class OrCondition extends AbstractCondition {
         }
 
         @Override
-        public OrCondition fromNetwork(ResourceLocation location, FriendlyByteBuf friendlyByteBuf, boolean inverted) {
+        public OrCondition fromNetwork(ResourceLocation location, RegistryFriendlyByteBuf friendlyByteBuf, boolean inverted) {
             List<ICondition> tempConditions = new ArrayList<>();
             int size = friendlyByteBuf.readVarInt();
             for (int i = 0; i < size; i++) {
@@ -72,7 +72,7 @@ public class OrCondition extends AbstractCondition {
         }
 
         @Override
-        public void toNetwork(FriendlyByteBuf friendlyByteBuf, OrCondition type) {
+        public void toNetwork(RegistryFriendlyByteBuf friendlyByteBuf, OrCondition type) {
             IConditionSerializer.super.toNetwork(friendlyByteBuf, type);
             friendlyByteBuf.writeVarInt(type.conditions.size());
             type.conditions.forEach(condition ->

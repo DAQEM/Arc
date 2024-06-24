@@ -1,19 +1,23 @@
 package com.daqem.arc.api.action.holder.serializer;
 
+import com.daqem.arc.api.action.IAction;
 import com.daqem.arc.api.action.holder.IActionHolder;
+import com.daqem.arc.api.action.serializer.IActionSerializer;
 import com.daqem.arc.data.serializer.ArcSerializer;
 import com.daqem.arc.registry.ArcRegistry;
 import com.google.gson.JsonObject;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
+
+import java.util.List;
 
 public interface IActionHolderSerializer<T extends IActionHolder> extends ArcSerializer {
 
-    T fromJson(ResourceLocation location, JsonObject jsonObject, int i);
+    T fromJson(JsonObject jsonObject, ResourceLocation location);
 
-    T fromNetwork(ResourceLocation location, FriendlyByteBuf friendlyByteBuf, int i);
+    T fromNetwork(RegistryFriendlyByteBuf friendlyByteBuf, ResourceLocation location);
 
-    static IActionHolder fromNetwork(FriendlyByteBuf friendlyByteBuf) {
+    static IActionHolder fromNetwork(RegistryFriendlyByteBuf friendlyByteBuf) {
         ResourceLocation resourceLocation = friendlyByteBuf.readResourceLocation();
         ResourceLocation resourceLocation2 = friendlyByteBuf.readResourceLocation();
         return ArcRegistry.ACTION_HOLDER.getOptional(resourceLocation).orElseThrow(
@@ -21,7 +25,7 @@ public interface IActionHolderSerializer<T extends IActionHolder> extends ArcSer
         ).getSerializer().fromNetwork(resourceLocation2, friendlyByteBuf);
     }
 
-    static <T extends IActionHolder> void toNetwork(T actionHolder, FriendlyByteBuf friendlyByteBuf) {
+    static <T extends IActionHolder> void toNetwork(T actionHolder, RegistryFriendlyByteBuf friendlyByteBuf) {
         friendlyByteBuf.writeResourceLocation(ArcRegistry.ACTION_HOLDER.getKey(actionHolder.getType()));
         friendlyByteBuf.writeResourceLocation(actionHolder.getLocation());
         ((IActionHolderSerializer<T>)actionHolder.getSerializer()).toNetwork(friendlyByteBuf, actionHolder);
@@ -29,13 +33,20 @@ public interface IActionHolderSerializer<T extends IActionHolder> extends ArcSer
     }
 
     default T fromJson(ResourceLocation location, JsonObject jsonObject) {
-        return fromJson(location, jsonObject, 0);
+        return fromJson(jsonObject, location);
     }
 
-    default T fromNetwork(ResourceLocation location, FriendlyByteBuf friendlyByteBuf) {
-        return fromNetwork(location, friendlyByteBuf, 0);
+    default T fromNetwork(ResourceLocation location, RegistryFriendlyByteBuf friendlyByteBuf) {
+        var actionHolder = fromNetwork(friendlyByteBuf, location);
+        List<IAction> actions = friendlyByteBuf.readList(friendlyByteBuf1 ->
+                IActionSerializer.fromNetwork((RegistryFriendlyByteBuf) friendlyByteBuf1));
+        actionHolder.addActions(actions);
+        return actionHolder;
     }
 
-    default void toNetwork(FriendlyByteBuf friendlyByteBuf, T type) {
+    default void toNetwork(RegistryFriendlyByteBuf friendlyByteBuf, T type) {
+        List<IAction> actions = type.getActions();
+        friendlyByteBuf.writeCollection(actions, (buf, action) ->
+                IActionSerializer.toNetwork(action, (RegistryFriendlyByteBuf) buf));
     }
 }

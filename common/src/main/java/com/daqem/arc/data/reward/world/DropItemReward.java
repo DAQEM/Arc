@@ -8,9 +8,11 @@ import com.daqem.arc.api.reward.serializer.IRewardSerializer;
 import com.daqem.arc.api.reward.type.IRewardType;
 import com.daqem.arc.api.reward.type.RewardType;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.core.Holder;
+import net.minecraft.core.component.DataComponentMap;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.GsonHelper;
@@ -28,17 +30,15 @@ import java.util.List;
 public class DropItemReward extends AbstractReward {
 
     private final ItemStack itemStack;
-    private final int amount;
 
-    public DropItemReward(double chance, int priority, ItemStack itemStack, int amount) {
+    public DropItemReward(double chance, int priority, ItemStack itemStack) {
         super(chance, priority);
         this.itemStack = itemStack;
-        this.amount = amount;
     }
 
     @Override
     public Component getDescription() {
-        return getDescription(amount, itemStack.getHoverName());
+        return getDescription(itemStack.getCount(), itemStack.getHoverName());
     }
 
     @Override
@@ -49,7 +49,7 @@ public class DropItemReward extends AbstractReward {
             if (level == null) level = actionData.getPlayer().arc$getLevel();
             if (level instanceof ServerLevel serverLevel) {
                 if (!itemStack.isEmpty()) {
-                    for (int i = 0; i < amount; i++) {
+                    for (int i = 0; i < itemStack.getCount(); i++) {
                         ItemEntity entity = new ItemEntity(
                                 serverLevel,
                                 pos.getX(),
@@ -69,7 +69,7 @@ public class DropItemReward extends AbstractReward {
                                         .withParameter(LootContextParams.BLOCK_STATE, state)
                                         .withParameter(LootContextParams.THIS_ENTITY, actionData.getPlayer().arc$getPlayer())
                         );
-                        for (int i = 0; i < amount; i++) {
+                        for (int i = 0; i < itemStack.getCount(); i++) {
                             ItemStack randomDrop = drops.get(serverLevel.random.nextInt(drops.size()));
                             ItemEntity entity = new ItemEntity(
                                     serverLevel,
@@ -96,34 +96,21 @@ public class DropItemReward extends AbstractReward {
 
         @Override
         public DropItemReward fromJson(JsonObject jsonObject, double chance, int priority) {
-            int amount = GsonHelper.getAsInt(jsonObject, "amount", 1);
-            Item item = GsonHelper.getAsItem(jsonObject, "item", null);
-            if (item == null) return new DropItemReward(chance, priority, ItemStack.EMPTY, amount);
-
-            ItemStack itemStack = new ItemStack(item);
-            CompoundTag tag = getCompoundTag(jsonObject);
-            if (tag != null) itemStack.setTag(tag);
-            return new DropItemReward(
-                    chance,
-                    priority,
-                    itemStack,
-                    amount);
+            return new DropItemReward(chance, priority, getItemStack(jsonObject.get("item")));
         }
 
         @Override
-        public DropItemReward fromNetwork(FriendlyByteBuf friendlyByteBuf, double chance, int priority) {
+        public DropItemReward fromNetwork(RegistryFriendlyByteBuf friendlyByteBuf, double chance, int priority) {
             return new DropItemReward(
                     chance,
                     priority,
-                    friendlyByteBuf.readItem(),
-                    friendlyByteBuf.readInt());
+                    ItemStack.STREAM_CODEC.decode(friendlyByteBuf));
         }
 
         @Override
-        public void toNetwork(FriendlyByteBuf friendlyByteBuf, DropItemReward type) {
+        public void toNetwork(RegistryFriendlyByteBuf friendlyByteBuf, DropItemReward type) {
             IRewardSerializer.super.toNetwork(friendlyByteBuf, type);
-            friendlyByteBuf.writeItem(type.itemStack);
-            friendlyByteBuf.writeInt(type.amount);
+            ItemStack.STREAM_CODEC.encode(friendlyByteBuf, type.itemStack);
         }
     }
 }

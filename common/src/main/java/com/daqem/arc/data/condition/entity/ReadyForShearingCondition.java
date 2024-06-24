@@ -7,7 +7,7 @@ import com.daqem.arc.api.condition.serializer.IConditionSerializer;
 import com.daqem.arc.api.condition.type.ConditionType;
 import com.daqem.arc.api.condition.type.IConditionType;
 import com.google.gson.*;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Shearable;
@@ -37,12 +37,12 @@ public class ReadyForShearingCondition extends AbstractCondition {
         }
 
         @Override
-        public ReadyForShearingCondition fromNetwork(ResourceLocation location, FriendlyByteBuf friendlyByteBuf, boolean inverted) {
+        public ReadyForShearingCondition fromNetwork(ResourceLocation location, RegistryFriendlyByteBuf friendlyByteBuf, boolean inverted) {
             return new ReadyForShearingCondition(inverted);
         }
 
         @Override
-        public void toNetwork(FriendlyByteBuf friendlyByteBuf, ReadyForShearingCondition type) {
+        public void toNetwork(RegistryFriendlyByteBuf friendlyByteBuf, ReadyForShearingCondition type) {
             IConditionSerializer.super.toNetwork(friendlyByteBuf, type);
         }
     }

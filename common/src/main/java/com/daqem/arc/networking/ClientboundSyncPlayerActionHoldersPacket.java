@@ -4,24 +4,42 @@ import com.daqem.arc.api.action.holder.ActionHolderManager;
 import com.daqem.arc.api.action.holder.IActionHolder;
 import com.daqem.arc.api.player.ArcClientPlayer;
 import dev.architectury.networking.NetworkManager;
-import dev.architectury.networking.simple.BaseS2CMessage;
-import dev.architectury.networking.simple.MessageType;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ClientboundSyncPlayerActionHoldersPacket extends BaseS2CMessage {
+public class ClientboundSyncPlayerActionHoldersPacket implements CustomPacketPayload {
 
     private final List<IActionHolder> actionHolders;
+
+    public static final StreamCodec<RegistryFriendlyByteBuf, ClientboundSyncPlayerActionHoldersPacket> STREAM_CODEC = new StreamCodec<>() {
+        @Override
+        public @NotNull ClientboundSyncPlayerActionHoldersPacket decode(RegistryFriendlyByteBuf buf) {
+            return new ClientboundSyncPlayerActionHoldersPacket(buf);
+        }
+
+        @Override
+        public void encode(RegistryFriendlyByteBuf buf, ClientboundSyncPlayerActionHoldersPacket packet) {
+            buf.writeInt(packet.actionHolders.size());
+            for (IActionHolder actionHolder : packet.actionHolders) {
+                buf.writeResourceLocation(actionHolder.getLocation());
+            }
+        }
+    };
 
     public ClientboundSyncPlayerActionHoldersPacket(List<IActionHolder> actionHolders) {
         this.actionHolders = actionHolders;
     }
 
-    public ClientboundSyncPlayerActionHoldersPacket(FriendlyByteBuf friendlyByteBuf) {
+    public ClientboundSyncPlayerActionHoldersPacket(RegistryFriendlyByteBuf friendlyByteBuf) {
         List<ResourceLocation> actionHolderLocations = new ArrayList<>();
         int size = friendlyByteBuf.readInt();
         for (int i = 0; i < size; i++) {
@@ -31,23 +49,15 @@ public class ClientboundSyncPlayerActionHoldersPacket extends BaseS2CMessage {
     }
 
     @Override
-    public MessageType getType() {
+    public @NotNull Type<? extends CustomPacketPayload> type() {
         return ArcNetworking.CLIENTBOUND_SYNC_PLAYER_ACTION_HOLDERS;
     }
 
-    @Override
-    public void write(FriendlyByteBuf buf) {
-        buf.writeInt(actionHolders.size());
-        for (IActionHolder actionHolder : actionHolders) {
-            buf.writeResourceLocation(actionHolder.getLocation());
-        }
-    }
-
-    @Override
-    public void handle(NetworkManager.PacketContext context) {
+    @Environment(EnvType.CLIENT)
+    public static void handleClientSide(ClientboundSyncPlayerActionHoldersPacket packet, NetworkManager.PacketContext context) {
         if (Minecraft.getInstance().player instanceof ArcClientPlayer arcClientPlayer) {
             arcClientPlayer.arc$clearActionHolders();
-            arcClientPlayer.arc$addActionHolders(actionHolders);
+            arcClientPlayer.arc$addActionHolders(packet.actionHolders);
         }
     }
 }

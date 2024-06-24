@@ -4,7 +4,7 @@ import com.daqem.arc.api.condition.ICondition;
 import com.daqem.arc.data.serializer.ArcSerializer;
 import com.daqem.arc.registry.ArcRegistry;
 import com.google.gson.JsonObject;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
 
@@ -12,9 +12,9 @@ public interface IConditionSerializer<T extends ICondition> extends ArcSerialize
 
     T fromJson(ResourceLocation location, JsonObject jsonObject, boolean inverted);
 
-    T fromNetwork(ResourceLocation location, FriendlyByteBuf friendlyByteBuf, boolean inverted);
+    T fromNetwork(ResourceLocation location, RegistryFriendlyByteBuf friendlyByteBuf, boolean inverted);
 
-    static ICondition fromNetwork(FriendlyByteBuf friendlyByteBuf) {
+    static ICondition fromNetwork(RegistryFriendlyByteBuf friendlyByteBuf) {
         ResourceLocation resourceLocation = friendlyByteBuf.readResourceLocation();
         ResourceLocation resourceLocation2 = friendlyByteBuf.readResourceLocation();
         return ArcRegistry.CONDITION.getOptional(resourceLocation).orElseThrow(
@@ -22,7 +22,7 @@ public interface IConditionSerializer<T extends ICondition> extends ArcSerialize
         ).getSerializer().fromNetwork(resourceLocation2, friendlyByteBuf);
     }
 
-    static <T extends ICondition> void toNetwork(T condition, FriendlyByteBuf friendlyByteBuf, ResourceLocation location) {
+    static <T extends ICondition> void toNetwork(T condition, RegistryFriendlyByteBuf friendlyByteBuf, ResourceLocation location) {
         friendlyByteBuf.writeResourceLocation(ArcRegistry.CONDITION.getKey(condition.getType()));
         friendlyByteBuf.writeResourceLocation(location);
         ((IConditionSerializer<T>)condition.getSerializer()).toNetwork(friendlyByteBuf, condition);
@@ -33,11 +33,11 @@ public interface IConditionSerializer<T extends ICondition> extends ArcSerialize
         return fromJson(location, jsonObject, GsonHelper.getAsBoolean(jsonObject, "inverted", false));
     }
 
-    default T fromNetwork(ResourceLocation location, FriendlyByteBuf friendlyByteBuf) {
+    default T fromNetwork(ResourceLocation location, RegistryFriendlyByteBuf friendlyByteBuf) {
         return fromNetwork(location, friendlyByteBuf, friendlyByteBuf.readBoolean());
     }
 
-    default void toNetwork(FriendlyByteBuf friendlyByteBuf, T type) {
+    default void toNetwork(RegistryFriendlyByteBuf friendlyByteBuf, T type) {
         friendlyByteBuf.writeBoolean(type.isInverted());
     }
 }

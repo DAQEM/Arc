@@ -8,7 +8,7 @@ import com.daqem.arc.api.condition.type.ConditionType;
 import com.daqem.arc.api.condition.type.IConditionType;
 import com.google.gson.*;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
@@ -58,7 +58,7 @@ public class BlocksCondition extends AbstractCondition {
         }
 
         @Override
-        public BlocksCondition fromNetwork(ResourceLocation location, FriendlyByteBuf friendlyByteBuf, boolean inverted) {
+        public BlocksCondition fromNetwork(ResourceLocation location, RegistryFriendlyByteBuf friendlyByteBuf, boolean inverted) {
             int blockCount = friendlyByteBuf.readVarInt();
             int tagCount = friendlyByteBuf.readVarInt();
 
@@ -66,7 +66,7 @@ public class BlocksCondition extends AbstractCondition {
             List<TagKey<Block>> blockTags = new ArrayList<>();
 
             for (int i = 0; i < blockCount; i++) {
-                blocks.add(friendlyByteBuf.readById(BuiltInRegistries.BLOCK));
+                blocks.add(BuiltInRegistries.BLOCK.byId(friendlyByteBuf.readVarInt()));
             }
 
             for (int i = 0; i < tagCount; i++) {
@@ -81,11 +81,11 @@ public class BlocksCondition extends AbstractCondition {
         }
 
         @Override
-        public void toNetwork(FriendlyByteBuf friendlyByteBuf, BlocksCondition type) {
+        public void toNetwork(RegistryFriendlyByteBuf friendlyByteBuf, BlocksCondition type) {
             IConditionSerializer.super.toNetwork(friendlyByteBuf, type);
             friendlyByteBuf.writeVarInt(type.blocks.size());
             friendlyByteBuf.writeVarInt(type.blockTags.size());
-            type.blocks.forEach(block -> friendlyByteBuf.writeId(BuiltInRegistries.BLOCK, block));
+            type.blocks.forEach(block -> friendlyByteBuf.writeVarInt(BuiltInRegistries.BLOCK.getId(block)));
             type.blockTags.forEach(tag -> friendlyByteBuf.writeResourceLocation(tag.location()));
         }
     }

@@ -7,7 +7,7 @@ import com.daqem.arc.api.condition.serializer.IConditionSerializer;
 import com.daqem.arc.api.condition.type.ConditionType;
 import com.daqem.arc.api.condition.type.IConditionType;
 import com.google.gson.*;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
@@ -59,12 +59,12 @@ public class CropFullyGrownCondition extends AbstractCondition {
         }
 
         @Override
-        public CropFullyGrownCondition fromNetwork(ResourceLocation location, FriendlyByteBuf friendlyByteBuf, boolean inverted) {
+        public CropFullyGrownCondition fromNetwork(ResourceLocation location, RegistryFriendlyByteBuf friendlyByteBuf, boolean inverted) {
             return new CropFullyGrownCondition(inverted);
         }
 
         @Override
-        public void toNetwork(FriendlyByteBuf friendlyByteBuf, CropFullyGrownCondition type) {
+        public void toNetwork(RegistryFriendlyByteBuf friendlyByteBuf, CropFullyGrownCondition type) {
             IConditionSerializer.super.toNetwork(friendlyByteBuf, type);
         }
     }

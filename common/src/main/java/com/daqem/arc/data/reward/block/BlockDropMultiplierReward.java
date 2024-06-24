@@ -9,7 +9,7 @@ import com.daqem.arc.api.reward.type.IRewardType;
 import com.daqem.arc.api.reward.type.RewardType;
 import com.google.gson.JsonObject;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.GsonHelper;
@@ -85,7 +85,7 @@ public class BlockDropMultiplierReward extends AbstractReward {
         }
 
         @Override
-        public BlockDropMultiplierReward fromNetwork(FriendlyByteBuf friendlyByteBuf, double chance, int priority) {
+        public BlockDropMultiplierReward fromNetwork(RegistryFriendlyByteBuf friendlyByteBuf, double chance, int priority) {
             return new BlockDropMultiplierReward(
                     chance,
                     priority,
@@ -93,7 +93,7 @@ public class BlockDropMultiplierReward extends AbstractReward {
         }
 
         @Override
-        public void toNetwork(FriendlyByteBuf friendlyByteBuf, BlockDropMultiplierReward type) {
+        public void toNetwork(RegistryFriendlyByteBuf friendlyByteBuf, BlockDropMultiplierReward type) {
             IRewardSerializer.super.toNetwork(friendlyByteBuf, type);
             friendlyByteBuf.writeInt(type.multiplier);
         }

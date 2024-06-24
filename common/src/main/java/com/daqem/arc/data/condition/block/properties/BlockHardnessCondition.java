@@ -8,7 +8,7 @@ import com.daqem.arc.api.condition.type.ConditionType;
 import com.daqem.arc.api.condition.type.IConditionType;
 import com.google.gson.*;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
@@ -59,7 +59,7 @@ public class BlockHardnessCondition extends AbstractCondition {
         }
 
         @Override
-        public BlockHardnessCondition fromNetwork(ResourceLocation location, FriendlyByteBuf friendlyByteBuf, boolean inverted) {
+        public BlockHardnessCondition fromNetwork(ResourceLocation location, RegistryFriendlyByteBuf friendlyByteBuf, boolean inverted) {
             return new BlockHardnessCondition(
                     inverted,
                     friendlyByteBuf.readFloat(),
@@ -67,7 +67,7 @@ public class BlockHardnessCondition extends AbstractCondition {
         }
 
         @Override
-        public void toNetwork(FriendlyByteBuf friendlyByteBuf, BlockHardnessCondition type) {
+        public void toNetwork(RegistryFriendlyByteBuf friendlyByteBuf, BlockHardnessCondition type) {
             IConditionSerializer.super.toNetwork(friendlyByteBuf, type);
             friendlyByteBuf.writeFloat(type.min);
             friendlyByteBuf.writeFloat(type.max);

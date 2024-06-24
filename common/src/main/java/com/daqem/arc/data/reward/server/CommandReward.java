@@ -12,7 +12,7 @@ import com.google.gson.JsonObject;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.GsonHelper;
@@ -57,13 +57,6 @@ public class CommandReward extends AbstractReward {
             ItemStack itemStack = actionData.getData(ActionDataType.ITEM_STACK);
             if (itemStack != null) {
                 command = command.replace("%item_stack%", BuiltInRegistries.ITEM.getKey(itemStack.getItem()).toString());
-
-                CompoundTag tag = itemStack.getTag();
-                if (tag != null) {
-                    command = command.replace("%item_stack_with_tag%", BuiltInRegistries.ITEM.getKey(itemStack.getItem()) + tag.toString());
-                } else {
-                    command = command.replace("%item_stack_with_tag%", BuiltInRegistries.ITEM.getKey(itemStack.getItem()).toString());
-                }
             }
 
             MinecraftServer server = serverPlayer.getServer();
@@ -85,7 +78,7 @@ public class CommandReward extends AbstractReward {
         }
 
         @Override
-        public CommandReward fromNetwork(FriendlyByteBuf friendlyByteBuf, double chance, int priority) {
+        public CommandReward fromNetwork(RegistryFriendlyByteBuf friendlyByteBuf, double chance, int priority) {
             return new CommandReward(
                     chance,
                     priority,
@@ -93,7 +86,7 @@ public class CommandReward extends AbstractReward {
         }
 
         @Override
-        public void toNetwork(FriendlyByteBuf friendlyByteBuf, CommandReward type) {
+        public void toNetwork(RegistryFriendlyByteBuf friendlyByteBuf, CommandReward type) {
             IRewardSerializer.super.toNetwork(friendlyByteBuf, type);
             friendlyByteBuf.writeUtf(type.command);
         }

@@ -8,8 +8,10 @@ import com.daqem.arc.api.condition.type.ConditionType;
 import com.daqem.arc.api.condition.type.IConditionType;
 import com.google.gson.*;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
@@ -71,7 +73,7 @@ public class ItemsCondition extends AbstractCondition {
         }
 
         @Override
-        public ItemsCondition fromNetwork(ResourceLocation location, FriendlyByteBuf friendlyByteBuf, boolean inverted) {
+        public ItemsCondition fromNetwork(ResourceLocation location, RegistryFriendlyByteBuf friendlyByteBuf, boolean inverted) {
             int itemCount = friendlyByteBuf.readVarInt();
             int tagCount = friendlyByteBuf.readVarInt();
 
@@ -79,7 +81,8 @@ public class ItemsCondition extends AbstractCondition {
             List<TagKey<Item>> itemTags = new ArrayList<>();
 
             for (int i = 0; i < itemCount; i++) {
-                items.add(friendlyByteBuf.readById(BuiltInRegistries.ITEM));
+
+                items.add(ByteBufCodecs.registry(Registries.ITEM).decode(friendlyByteBuf));
             }
 
             for (int i = 0; i < tagCount; i++) {
@@ -94,11 +97,11 @@ public class ItemsCondition extends AbstractCondition {
         }
 
         @Override
-        public void toNetwork(FriendlyByteBuf friendlyByteBuf, ItemsCondition type) {
+        public void toNetwork(RegistryFriendlyByteBuf friendlyByteBuf, ItemsCondition type) {
             IConditionSerializer.super.toNetwork(friendlyByteBuf, type);
             friendlyByteBuf.writeVarInt(type.items.size());
             friendlyByteBuf.writeVarInt(type.itemTags.size());
-            type.items.forEach(item -> friendlyByteBuf.writeId(BuiltInRegistries.ITEM, item));
+            type.items.forEach(item -> ByteBufCodecs.registry(Registries.ITEM).encode(friendlyByteBuf, item));
             type.itemTags.forEach(tag -> friendlyByteBuf.writeResourceLocation(tag.location()));
         }
     }

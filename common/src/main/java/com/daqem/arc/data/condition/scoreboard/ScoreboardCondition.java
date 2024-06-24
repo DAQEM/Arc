@@ -6,11 +6,12 @@ import com.daqem.arc.api.condition.serializer.IConditionSerializer;
 import com.daqem.arc.api.condition.type.ConditionType;
 import com.daqem.arc.api.condition.type.IConditionType;
 import com.google.gson.*;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.scores.Objective;
+import net.minecraft.world.scores.ScoreHolder;
 import net.minecraft.world.scores.Scoreboard;
 
 public class ScoreboardCondition extends AbstractCondition {
@@ -40,7 +41,7 @@ public class ScoreboardCondition extends AbstractCondition {
         Scoreboard scoreboard = actionData.getPlayer().arc$getPlayer().getScoreboard();
         Objective objective = scoreboard.getObjective(this.objective);
         if (objective != null) {
-            int score = scoreboard.getOrCreatePlayerScore(actionData.getPlayer().arc$getName(), objective).getScore();
+            int score = scoreboard.getOrCreatePlayerScore((ScoreHolder) actionData.getPlayer(), objective).get();
             return score >= min && score <= max;
         }
         return false;
@@ -63,7 +64,7 @@ public class ScoreboardCondition extends AbstractCondition {
         }
 
         @Override
-        public ScoreboardCondition fromNetwork(ResourceLocation location, FriendlyByteBuf friendlyByteBuf, boolean inverted) {
+        public ScoreboardCondition fromNetwork(ResourceLocation location, RegistryFriendlyByteBuf friendlyByteBuf, boolean inverted) {
             return new ScoreboardCondition(
                     inverted,
                     friendlyByteBuf.readUtf(),
@@ -72,7 +73,7 @@ public class ScoreboardCondition extends AbstractCondition {
         }
 
         @Override
-        public void toNetwork(FriendlyByteBuf friendlyByteBuf, ScoreboardCondition type) {
+        public void toNetwork(RegistryFriendlyByteBuf friendlyByteBuf, ScoreboardCondition type) {
             IConditionSerializer.super.toNetwork(friendlyByteBuf, type);
             friendlyByteBuf.writeUtf(type.objective);
             friendlyByteBuf.writeInt(type.min);

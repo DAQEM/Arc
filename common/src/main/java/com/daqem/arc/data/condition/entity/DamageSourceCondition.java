@@ -7,7 +7,7 @@ import com.daqem.arc.api.condition.serializer.IConditionSerializer;
 import com.daqem.arc.api.condition.type.ConditionType;
 import com.daqem.arc.api.condition.type.IConditionType;
 import com.google.gson.JsonObject;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.damagesource.DamageSource;
@@ -47,14 +47,14 @@ public class DamageSourceCondition extends AbstractCondition {
         }
 
         @Override
-        public DamageSourceCondition fromNetwork(ResourceLocation location, FriendlyByteBuf friendlyByteBuf, boolean inverted) {
+        public DamageSourceCondition fromNetwork(ResourceLocation location, RegistryFriendlyByteBuf friendlyByteBuf, boolean inverted) {
             return new DamageSourceCondition(
                     inverted,
                     friendlyByteBuf.readUtf());
         }
 
         @Override
-        public void toNetwork(FriendlyByteBuf friendlyByteBuf, DamageSourceCondition type) {
+        public void toNetwork(RegistryFriendlyByteBuf friendlyByteBuf, DamageSourceCondition type) {
             IConditionSerializer.super.toNetwork(friendlyByteBuf, type);
             friendlyByteBuf.writeUtf(type.source);
         }

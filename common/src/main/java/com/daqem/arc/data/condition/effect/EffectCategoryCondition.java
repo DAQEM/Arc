@@ -7,7 +7,7 @@ import com.daqem.arc.api.condition.serializer.IConditionSerializer;
 import com.daqem.arc.api.condition.type.ConditionType;
 import com.daqem.arc.api.condition.type.IConditionType;
 import com.google.gson.*;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffectCategory;
@@ -30,7 +30,7 @@ public class EffectCategoryCondition extends AbstractCondition {
     @Override
     public boolean isMet(ActionData actionData) {
         MobEffectInstance effectInstance = actionData.getData(ActionDataType.MOB_EFFECT_INSTANCE);
-        return effectInstance != null && effectInstance.getEffect().getCategory() == this.effectCategory;
+        return effectInstance != null && effectInstance.getEffect().value().getCategory() == this.effectCategory;
     }
 
     @Override
@@ -48,14 +48,14 @@ public class EffectCategoryCondition extends AbstractCondition {
         }
 
         @Override
-        public EffectCategoryCondition fromNetwork(ResourceLocation location, FriendlyByteBuf friendlyByteBuf, boolean inverted) {
+        public EffectCategoryCondition fromNetwork(ResourceLocation location, RegistryFriendlyByteBuf friendlyByteBuf, boolean inverted) {
             return new EffectCategoryCondition(
                     inverted,
                     friendlyByteBuf.readEnum(MobEffectCategory.class));
         }
 
         @Override
-        public void toNetwork(FriendlyByteBuf friendlyByteBuf, EffectCategoryCondition type) {
+        public void toNetwork(RegistryFriendlyByteBuf friendlyByteBuf, EffectCategoryCondition type) {
             IConditionSerializer.super.toNetwork(friendlyByteBuf, type);
             friendlyByteBuf.writeEnum(type.effectCategory);
         }

@@ -9,8 +9,10 @@ import com.daqem.arc.api.reward.type.IRewardType;
 import com.daqem.arc.api.reward.type.RewardType;
 import com.google.gson.*;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -31,7 +33,7 @@ public class EffectReward extends AbstractReward {
 
     @Override
     public Component getDescription() {
-        return getDescription(effect.getDisplayName(), MobEffectUtil.formatDuration(getMobEffectInstance(), 1.0F), amplifier + 1);
+        return getDescription(effect.getDisplayName(), MobEffectUtil.formatDuration(getMobEffectInstance(), 1.0F, 20.0F), amplifier + 1);
     }
 
     @Override
@@ -42,7 +44,7 @@ public class EffectReward extends AbstractReward {
     }
 
     private MobEffectInstance getMobEffectInstance() {
-        return new MobEffectInstance(effect, duration, amplifier);
+        return new MobEffectInstance(BuiltInRegistries.MOB_EFFECT.wrapAsHolder(effect), duration, amplifier);
     }
 
     @Override
@@ -63,19 +65,19 @@ public class EffectReward extends AbstractReward {
         }
 
         @Override
-        public EffectReward fromNetwork(FriendlyByteBuf friendlyByteBuf, double chance, int priority) {
+        public EffectReward fromNetwork(RegistryFriendlyByteBuf friendlyByteBuf, double chance, int priority) {
             return new EffectReward(
                     chance,
                     priority,
-                    BuiltInRegistries.MOB_EFFECT.byId(friendlyByteBuf.readVarInt()),
+                    ByteBufCodecs.registry(Registries.MOB_EFFECT).decode(friendlyByteBuf),
                     friendlyByteBuf.readVarInt(),
                     friendlyByteBuf.readVarInt());
         }
 
         @Override
-        public void toNetwork(FriendlyByteBuf friendlyByteBuf, EffectReward type) {
+        public void toNetwork(RegistryFriendlyByteBuf friendlyByteBuf, EffectReward type) {
             IRewardSerializer.super.toNetwork(friendlyByteBuf, type);
-            friendlyByteBuf.writeVarInt(BuiltInRegistries.MOB_EFFECT.getId(type.effect));
+            ByteBufCodecs.registry(Registries.MOB_EFFECT).encode(friendlyByteBuf, type.effect);
             friendlyByteBuf.writeVarInt(type.duration);
             friendlyByteBuf.writeVarInt(type.amplifier);
         }

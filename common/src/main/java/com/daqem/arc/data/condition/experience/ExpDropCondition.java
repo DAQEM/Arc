@@ -7,7 +7,7 @@ import com.daqem.arc.api.condition.serializer.IConditionSerializer;
 import com.daqem.arc.api.condition.type.ConditionType;
 import com.daqem.arc.api.condition.type.IConditionType;
 import com.google.gson.*;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
@@ -54,7 +54,7 @@ public class ExpDropCondition extends AbstractCondition {
         }
 
         @Override
-        public ExpDropCondition fromNetwork(ResourceLocation location, FriendlyByteBuf friendlyByteBuf, boolean inverted) {
+        public ExpDropCondition fromNetwork(ResourceLocation location, RegistryFriendlyByteBuf friendlyByteBuf, boolean inverted) {
             return new ExpDropCondition(
                     inverted,
                     friendlyByteBuf.readVarInt(),
@@ -62,7 +62,7 @@ public class ExpDropCondition extends AbstractCondition {
         }
 
         @Override
-        public void toNetwork(FriendlyByteBuf friendlyByteBuf, ExpDropCondition type) {
+        public void toNetwork(RegistryFriendlyByteBuf friendlyByteBuf, ExpDropCondition type) {
             IConditionSerializer.super.toNetwork(friendlyByteBuf, type);
             friendlyByteBuf.writeVarInt(type.min);
             friendlyByteBuf.writeVarInt(type.max);

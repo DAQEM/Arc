@@ -12,7 +12,7 @@ public class AdvancementEvents {
         PlayerEvent.PLAYER_ADVANCEMENT.register((player, advancement) -> {
             if (player instanceof ArcServerPlayer arcServerPlayer) {
                 new ActionDataBuilder(arcServerPlayer, ActionType.ADVANCEMENT)
-                        .withData(ActionDataType.ADVANCEMENT, advancement)
+                        .withData(ActionDataType.ADVANCEMENT, advancement.value())
                         .build()
                         .sendToAction();
             }

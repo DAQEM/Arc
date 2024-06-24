@@ -6,7 +6,7 @@ import com.daqem.arc.api.condition.serializer.IConditionSerializer;
 import com.daqem.arc.api.condition.type.ConditionType;
 import com.daqem.arc.api.condition.type.IConditionType;
 import com.google.gson.*;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.BlastingRecipe;
 import net.minecraft.world.item.crafting.Recipe;
@@ -45,12 +45,12 @@ public class IsBlastingRecipeCondition extends IsRecipeCondition<BlastingRecipe>
         }
 
         @Override
-        public IsBlastingRecipeCondition fromNetwork(ResourceLocation location, FriendlyByteBuf friendlyByteBuf, boolean inverted) {
+        public IsBlastingRecipeCondition fromNetwork(ResourceLocation location, RegistryFriendlyByteBuf friendlyByteBuf, boolean inverted) {
             return new IsBlastingRecipeCondition(inverted);
         }
 
         @Override
-        public void toNetwork(FriendlyByteBuf friendlyByteBuf, IsBlastingRecipeCondition type) {
+        public void toNetwork(RegistryFriendlyByteBuf friendlyByteBuf, IsBlastingRecipeCondition type) {
             IConditionSerializer.super.toNetwork(friendlyByteBuf, type);
         }
     }

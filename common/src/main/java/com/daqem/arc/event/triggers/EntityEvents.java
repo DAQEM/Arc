@@ -9,6 +9,7 @@ import com.daqem.arc.api.action.data.type.ActionDataType;
 import dev.architectury.event.EventResult;
 import dev.architectury.event.events.common.EntityEvent;
 import dev.architectury.event.events.common.InteractionEvent;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.animal.Animal;
 
 import javax.sound.midi.MidiFileFormat;
@@ -27,7 +28,7 @@ public class EntityEvents {
                         .withData(ActionDataType.ENTITY, entity)
                         .withData(ActionDataType.BLOCK_POSITION, entity.blockPosition())
                         .withData(ActionDataType.WORLD, entity.level())
-                        .withData(ActionDataType.EXP_DROP, entity.getExperienceReward())
+                        .withData(ActionDataType.EXP_DROP, entity.getExperienceReward((ServerLevel) entity.level(), entity))
                         .build()
                         .sendToAction();
             }

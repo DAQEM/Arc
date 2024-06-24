@@ -8,7 +8,7 @@ import com.daqem.arc.api.condition.type.ConditionType;
 import com.daqem.arc.api.condition.type.IConditionType;
 import com.google.gson.JsonObject;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -51,14 +51,14 @@ public class DimensionCondition extends AbstractCondition {
         }
 
         @Override
-        public DimensionCondition fromNetwork(ResourceLocation location, FriendlyByteBuf friendlyByteBuf, boolean inverted) {
+        public DimensionCondition fromNetwork(ResourceLocation location, RegistryFriendlyByteBuf friendlyByteBuf, boolean inverted) {
             return new DimensionCondition(
                     inverted,
                     friendlyByteBuf.readResourceKey(Registries.DIMENSION));
         }
 
         @Override
-        public void toNetwork(FriendlyByteBuf friendlyByteBuf, DimensionCondition type) {
+        public void toNetwork(RegistryFriendlyByteBuf friendlyByteBuf, DimensionCondition type) {
             IConditionSerializer.super.toNetwork(friendlyByteBuf, type);
             friendlyByteBuf.writeResourceKey(type.dimension);
         }

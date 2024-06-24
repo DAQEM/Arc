@@ -37,7 +37,7 @@ public class ElementConverter<T> {
     }
 
     public T convertToElement(String element) {
-        T type = registry.get(new ResourceLocation(element));
+        T type = registry.get(ResourceLocation.parse(element));
 
         if (type instanceof Block && element.equals("minecraft:air")) {
             return type;
@@ -54,7 +54,7 @@ public class ElementConverter<T> {
 
         // If not found in the registry, it will return the default value for the type.
         // This checks if the element is actually in the registry.
-        else if (type == registry.get(new ResourceLocation("x"))) {
+        else if (type == registry.get(ResourceLocation.parse("x"))) {
             throw new IllegalArgumentException(element + " could not be found in registry " + registry.key().location());
         }
 
@@ -63,13 +63,13 @@ public class ElementConverter<T> {
 
     private Function<String, T> convertToElement() {
         return elementLoc -> registry.get(
-                new ResourceLocation(elementLoc));
+                ResourceLocation.parse(elementLoc));
     }
 
     private Function<String, TagKey<T>> replaceHashAndConvertToTag() {
         return elementLoc -> TagKey.create(
                 registry.key(),
-                new ResourceLocation(
+                ResourceLocation.parse(
                         elementLoc.replace("#", "")));
     }
 }

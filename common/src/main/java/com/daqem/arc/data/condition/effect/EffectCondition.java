@@ -8,8 +8,10 @@ import com.daqem.arc.api.condition.type.ConditionType;
 import com.daqem.arc.api.condition.type.IConditionType;
 import com.google.gson.*;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -49,16 +51,16 @@ public class EffectCondition extends AbstractCondition {
         }
 
         @Override
-        public EffectCondition fromNetwork(ResourceLocation location, FriendlyByteBuf friendlyByteBuf, boolean inverted) {
+        public EffectCondition fromNetwork(ResourceLocation location, RegistryFriendlyByteBuf friendlyByteBuf, boolean inverted) {
             return new EffectCondition(
                     inverted,
-                    friendlyByteBuf.readById(BuiltInRegistries.MOB_EFFECT));
+                    ByteBufCodecs.registry(Registries.MOB_EFFECT).decode(friendlyByteBuf));
         }
 
         @Override
-        public void toNetwork(FriendlyByteBuf friendlyByteBuf, EffectCondition type) {
+        public void toNetwork(RegistryFriendlyByteBuf friendlyByteBuf, EffectCondition type) {
             IConditionSerializer.super.toNetwork(friendlyByteBuf, type);
-            friendlyByteBuf.writeId(BuiltInRegistries.MOB_EFFECT, type.effect);
+            ByteBufCodecs.registry(Registries.MOB_EFFECT).encode(friendlyByteBuf, type.effect);
         }
     }
 }

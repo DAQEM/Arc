@@ -26,8 +26,8 @@ public abstract class MixinAxeItem extends DiggerItem {
 
     @Shadow protected abstract Optional<BlockState> getStripped(BlockState arg);
 
-    public MixinAxeItem(float f, float g, Tier tier, TagKey<Block> tagKey, Properties properties) {
-        super(f, g, tier, tagKey, properties);
+    public MixinAxeItem(Tier tier, TagKey<Block> tagKey, Properties properties) {
+        super(tier, tagKey, properties);
     }
 
     @Inject(at = @At("HEAD"), method = "useOn(Lnet/minecraft/world/item/context/UseOnContext;)Lnet/minecraft/world/InteractionResult;")

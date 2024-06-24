@@ -3,42 +3,51 @@ package com.daqem.arc.networking;
 import com.daqem.arc.api.action.IAction;
 import com.daqem.arc.api.action.holder.ActionHolderManager;
 import com.daqem.arc.api.action.serializer.IActionSerializer;
-import com.daqem.arc.data.ActionManager;
 import dev.architectury.networking.NetworkManager;
-import dev.architectury.networking.simple.BaseS2CMessage;
-import dev.architectury.networking.simple.MessageType;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public class ClientboundUpdateActionsPacket extends BaseS2CMessage {
+public class ClientboundUpdateActionsPacket implements CustomPacketPayload {
 
     private final List<IAction> actions;
+
+    public static final StreamCodec<RegistryFriendlyByteBuf, ClientboundUpdateActionsPacket> STREAM_CODEC = new StreamCodec<>() {
+        @Override
+        public @NotNull ClientboundUpdateActionsPacket decode(RegistryFriendlyByteBuf buf) {
+            return new ClientboundUpdateActionsPacket(buf);
+        }
+
+        @Override
+        public void encode(RegistryFriendlyByteBuf buf, ClientboundUpdateActionsPacket packet) {
+            buf.writeCollection(packet.actions,
+                    (friendlyByteBuf, action) -> IActionSerializer.toNetwork(action, (RegistryFriendlyByteBuf) friendlyByteBuf));
+        }
+    };
 
     public ClientboundUpdateActionsPacket(List<IAction> actions) {
         this.actions = actions;
     }
 
-    public ClientboundUpdateActionsPacket(FriendlyByteBuf friendlyByteBuf) {
-        this.actions = friendlyByteBuf.readList(IActionSerializer::fromNetwork);
+    public ClientboundUpdateActionsPacket(RegistryFriendlyByteBuf friendlyByteBuf) {
+        this.actions = friendlyByteBuf.readList(object -> IActionSerializer.fromNetwork((RegistryFriendlyByteBuf) object));
     }
 
     @Override
-    public MessageType getType() {
+    public @NotNull Type<? extends CustomPacketPayload> type() {
         return ArcNetworking.CLIENTBOUND_UPDATE_ACTIONS;
     }
 
-    @Override
-    public void write(FriendlyByteBuf buf) {
-        buf.writeCollection(actions,
-                (friendlyByteBuf, action) -> IActionSerializer.toNetwork(action, friendlyByteBuf));
-    }
-
-    @Override
-    public void handle(NetworkManager.PacketContext context) {
+    @Environment(EnvType.CLIENT)
+    public static void handleClientSide(ClientboundUpdateActionsPacket packet, NetworkManager.PacketContext context) {
         if (!Minecraft.getInstance().isLocalServer()) {
-            ActionHolderManager.getInstance().registerActions(actions);
+            ActionHolderManager.getInstance().registerActions(packet.actions);
         }
     }
 }

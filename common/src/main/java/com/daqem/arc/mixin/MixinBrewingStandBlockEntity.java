@@ -1,5 +1,6 @@
 package com.daqem.arc.mixin;
 
+import com.daqem.arc.Arc;
 import com.daqem.arc.event.triggers.PlayerEvents;
 import com.daqem.arc.api.player.ArcServerPlayer;
 import com.daqem.arc.player.brewing.BrewingStandData;
@@ -23,14 +24,12 @@ import java.util.Map;
 @Mixin(BrewingStandBlockEntity.class)
 public abstract class MixinBrewingStandBlockEntity {
 
-    private static final Map<BlockPos, BrewingStandData> BREWING_STANDS = new HashMap<>();
-
     @Inject(at = @At("HEAD"), method = "serverTick(Lnet/minecraft/world/level/Level;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/world/level/block/entity/BrewingStandBlockEntity;)V")
     private static void serverTick(Level level, BlockPos blockPos, BlockState blockState, BrewingStandBlockEntity brewingStandBlockEntity, CallbackInfo info) {
-        if (!BREWING_STANDS.containsKey(blockPos)) {
-            BREWING_STANDS.put(blockPos, new BrewingStandData(brewingStandBlockEntity));
+        if (!Arc.BREWING_STANDS.containsKey(blockPos)) {
+            Arc.BREWING_STANDS.put(blockPos, new BrewingStandData(brewingStandBlockEntity));
         }
-        BrewingStandData brewingStandData = BREWING_STANDS.get(blockPos);
+        BrewingStandData brewingStandData = Arc.BREWING_STANDS.get(blockPos);
         for (int i = 0; i < 3; i++) {
             if (brewingStandBlockEntity.getItem(i).isEmpty()) {
                 if (brewingStandData.getBrewingStandItemOwner(i) != null) {
@@ -48,27 +47,14 @@ public abstract class MixinBrewingStandBlockEntity {
 
     @Inject(at = @At("HEAD"), method = "doBrew(Lnet/minecraft/world/level/Level;Lnet/minecraft/core/BlockPos;Lnet/minecraft/core/NonNullList;)V")
     private static void doBrew(Level level, BlockPos blockPos, NonNullList<ItemStack> nonNullList, CallbackInfo ci) {
-        if (BREWING_STANDS.containsKey(blockPos)) {
-            BrewingStandData brewingStandData = BREWING_STANDS.get(blockPos);
+        if (Arc.BREWING_STANDS.containsKey(blockPos)) {
+            BrewingStandData brewingStandData = Arc.BREWING_STANDS.get(blockPos);
             if (brewingStandData.getBrewingStandItemOwners().size() == nonNullList.stream().filter(itemStack -> (itemStack.getItem() instanceof PotionItem)).toList().size()) {
                 int i = 0;
                 for (ArcServerPlayer player : brewingStandData.getBrewingStandItemOwners().values()) {
                     PlayerEvents.onBrewPotion(player, nonNullList.get(i), blockPos, level);
                     ++i;
                 }
-            }
-        }
-    }
-
-    @Inject(at = @At("HEAD"), method = "stillValid(Lnet/minecraft/world/entity/player/Player;)Z")
-    private void stillValid(Player player, CallbackInfoReturnable<Boolean> cir) {
-        if (player instanceof ArcServerPlayer arcServerPlayer) {
-            BrewingStandBlockEntity brewingStand = (BrewingStandBlockEntity) (Object) this;
-            BlockPos blockPos = brewingStand.getBlockPos();
-            if (BREWING_STANDS.containsKey(blockPos)) {
-                BREWING_STANDS.get(blockPos).setLastPlayerToInteract(arcServerPlayer);
-            } else {
-                BREWING_STANDS.put(blockPos, new BrewingStandData(brewingStand));
             }
         }
     }

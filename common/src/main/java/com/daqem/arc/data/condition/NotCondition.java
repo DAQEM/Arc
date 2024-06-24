@@ -10,7 +10,7 @@ import com.daqem.arc.registry.ArcRegistry;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
 
@@ -59,7 +59,7 @@ public class NotCondition extends AbstractCondition {
         }
 
         @Override
-        public NotCondition fromNetwork(ResourceLocation location, FriendlyByteBuf friendlyByteBuf, boolean inverted) {
+        public NotCondition fromNetwork(ResourceLocation location, RegistryFriendlyByteBuf friendlyByteBuf, boolean inverted) {
             List<ICondition> tempConditions = new ArrayList<>();
             int size = friendlyByteBuf.readVarInt();
             for (int i = 0; i < size; i++) {
@@ -74,7 +74,7 @@ public class NotCondition extends AbstractCondition {
         }
 
         @Override
-        public void toNetwork(FriendlyByteBuf friendlyByteBuf, NotCondition type) {
+        public void toNetwork(RegistryFriendlyByteBuf friendlyByteBuf, NotCondition type) {
             IConditionSerializer.super.toNetwork(friendlyByteBuf, type);
             friendlyByteBuf.writeVarInt(type.conditions.size());
             type.conditions.forEach(condition ->

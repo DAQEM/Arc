@@ -8,7 +8,7 @@ import com.daqem.arc.api.reward.serializer.IRewardSerializer;
 import com.daqem.arc.api.reward.type.IRewardType;
 import com.daqem.arc.api.reward.type.RewardType;
 import com.google.gson.JsonObject;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -63,7 +63,7 @@ public class MultipleArrowsReward extends AbstractReward {
                 return new ActionResult();
             }
             if (bow.getItem() instanceof BowItem bowItem) {
-                float power = BowItem.getPowerForTime(bowItem.getUseDuration(bow) - player.getUseItemRemainingTicks());
+                float power = BowItem.getPowerForTime(bowItem.getUseDuration(bow, player) - player.getUseItemRemainingTicks());
                 float[] afloat = getShotPitches(new Random());
                 int[] arrowPositions = scatterArrows(amount);
                 for (int i = 0; i < amount; i++) {
@@ -92,32 +92,10 @@ public class MultipleArrowsReward extends AbstractReward {
     private void shootProjectile(AbstractArrow shotArrow, Level level, LivingEntity livingEntity, ItemStack bow, ItemStack arrow,
                                  float shotPitch, float power, float pitch) {
         if (livingEntity instanceof Player player) {
-            AbstractArrow projectile = new AbstractArrow(EntityType.ARROW, livingEntity, level) {
-
-                {
-                    int l;
-                    int k;
-                    this.setBaseDamage(shotArrow.getBaseDamage());
-                    this.setKnockback(shotArrow.getKnockback());
-                    this.setCritArrow(shotArrow.isCritArrow());
-                    this.setSecondsOnFire(shotArrow.getRemainingFireTicks());
-                    if (power == 1.0f) {
-                        setCritArrow(true);
-                    }
-                    if ((k = EnchantmentHelper.getItemEnchantmentLevel(Enchantments.POWER_ARROWS, bow)) > 0) {
-                        setBaseDamage(getBaseDamage() + (double)k * 0.5 + 0.5);
-                    }
-                    if ((l = EnchantmentHelper.getItemEnchantmentLevel(Enchantments.PUNCH_ARROWS, bow)) > 0) {
-                        setKnockback(l);
-                    }
-                    if (EnchantmentHelper.getItemEnchantmentLevel(Enchantments.FLAMING_ARROWS, bow) > 0) {
-                        setSecondsOnFire(100);
-                    }
-                    this.setSoundEvent(SoundEvents.ARROW_HIT);
-                }
+            AbstractArrow projectile = new AbstractArrow(EntityType.ARROW, livingEntity, level, arrow, bow) {
 
                 @Override
-                public @NotNull ItemStack getPickupItem() {
+                protected @NotNull ItemStack getDefaultPickupItem() {
                     return arrow;
                 }
 
@@ -134,7 +112,7 @@ public class MultipleArrowsReward extends AbstractReward {
             Vector3f vector3f = vec32.toVector3f().rotate(quaternionf);
             projectile.shoot(vector3f.x(), vector3f.y(), vector3f.z(), power, 1.0F);
 
-            bow.hurtAndBreak(1, player, player2 -> player2.broadcastBreakEvent(player.getUsedItemHand()));
+            bow.hurtAndBreak(1, player, LivingEntity.getSlotForHand(player.getUsedItemHand()));
             level.addFreshEntity(projectile);
             level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ARROW_SHOOT, SoundSource.PLAYERS, 1.0F, shotPitch);
         }
@@ -161,7 +139,7 @@ public class MultipleArrowsReward extends AbstractReward {
         }
 
         @Override
-        public MultipleArrowsReward fromNetwork(FriendlyByteBuf friendlyByteBuf, double chance, int priority) {
+        public MultipleArrowsReward fromNetwork(RegistryFriendlyByteBuf friendlyByteBuf, double chance, int priority) {
             return new MultipleArrowsReward(
                     chance,
                     priority,
@@ -169,7 +147,7 @@ public class MultipleArrowsReward extends AbstractReward {
         }
 
         @Override
-        public void toNetwork(FriendlyByteBuf friendlyByteBuf, MultipleArrowsReward type) {
+        public void toNetwork(RegistryFriendlyByteBuf friendlyByteBuf, MultipleArrowsReward type) {
             IRewardSerializer.super.toNetwork(friendlyByteBuf, type);
             friendlyByteBuf.writeInt(type.amount);
         }

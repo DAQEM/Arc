@@ -9,7 +9,7 @@ import com.daqem.arc.api.reward.serializer.IRewardSerializer;
 import com.daqem.arc.data.serializer.ArcSerializer;
 import com.daqem.arc.registry.ArcRegistry;
 import com.google.gson.JsonObject;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
 
@@ -20,9 +20,9 @@ public interface IActionSerializer<T extends IAction> extends ArcSerializer {
 
     T fromJson(ResourceLocation location, JsonObject jsonObject, ResourceLocation actionHolderLocation, IActionHolderType<?> actionHolderType, boolean performOnClient, List<IReward> rewards, List<ICondition> conditions);
 
-    T fromNetwork(ResourceLocation location, FriendlyByteBuf friendlyByteBuf, ResourceLocation actionHolderLocation, IActionHolderType<?> actionHolderType, boolean performOnClient, List<IReward> rewards, List<ICondition> conditions);
+    T fromNetwork(ResourceLocation location, RegistryFriendlyByteBuf friendlyByteBuf, ResourceLocation actionHolderLocation, IActionHolderType<?> actionHolderType, boolean performOnClient, List<IReward> rewards, List<ICondition> conditions);
 
-    static IAction fromNetwork(FriendlyByteBuf friendlyByteBuf) {
+    static IAction fromNetwork(RegistryFriendlyByteBuf friendlyByteBuf) {
         ResourceLocation resourceLocation = friendlyByteBuf.readResourceLocation();
         ResourceLocation resourceLocation2 = friendlyByteBuf.readResourceLocation();
         return ArcRegistry.ACTION.getOptional(resourceLocation).orElseThrow(
@@ -30,7 +30,7 @@ public interface IActionSerializer<T extends IAction> extends ArcSerializer {
         ).getSerializer().fromNetwork(resourceLocation2, friendlyByteBuf);
     }
 
-    static <T extends IAction> void toNetwork(T action, FriendlyByteBuf friendlyByteBuf) {
+    static <T extends IAction> void toNetwork(T action, RegistryFriendlyByteBuf friendlyByteBuf) {
         friendlyByteBuf.writeResourceLocation(ArcRegistry.ACTION.getKey(action.getType()));
         friendlyByteBuf.writeResourceLocation(action.getLocation());
         ((IActionSerializer<T>)action.getSerializer()).toNetwork(friendlyByteBuf, action);
@@ -65,22 +65,22 @@ public interface IActionSerializer<T extends IAction> extends ArcSerializer {
                 rewards, conditions);
     }
 
-    default T fromNetwork(ResourceLocation location, FriendlyByteBuf friendlyByteBuf) {
+    default T fromNetwork(ResourceLocation location, RegistryFriendlyByteBuf friendlyByteBuf) {
         return fromNetwork(location, friendlyByteBuf,
                 friendlyByteBuf.readResourceLocation(),
                 ArcRegistry.ACTION_HOLDER.getOptional(friendlyByteBuf.readResourceLocation()).orElse(null),
                 friendlyByteBuf.readBoolean(),
-                friendlyByteBuf.readList(IRewardSerializer::fromNetwork),
-                friendlyByteBuf.readList(IConditionSerializer::fromNetwork));
+                friendlyByteBuf.readList(object -> IRewardSerializer.fromNetwork((RegistryFriendlyByteBuf) object)),
+                friendlyByteBuf.readList(object -> IConditionSerializer.fromNetwork((RegistryFriendlyByteBuf) object)));
     }
 
-    default void toNetwork(FriendlyByteBuf friendlyByteBuf, T type) {
+    default void toNetwork(RegistryFriendlyByteBuf friendlyByteBuf, T type) {
         friendlyByteBuf.writeResourceLocation(type.getActionHolderLocation());
         friendlyByteBuf.writeResourceLocation(type.getActionHolderType().getLocation());
         friendlyByteBuf.writeBoolean(type.shouldPerformOnClient());
         friendlyByteBuf.writeCollection(type.getRewards(),
-                (friendlyByteBuf1, reward) -> IRewardSerializer.toNetwork(reward, friendlyByteBuf1, type.getLocation()));
+                (friendlyByteBuf1, reward) -> IRewardSerializer.toNetwork(reward, (RegistryFriendlyByteBuf) friendlyByteBuf1, type.getLocation()));
         friendlyByteBuf.writeCollection(type.getConditions(),
-                (friendlyByteBuf1, condition) -> IConditionSerializer.toNetwork(condition, friendlyByteBuf1, type.getLocation()));
+                (friendlyByteBuf1, condition) -> IConditionSerializer.toNetwork(condition, (RegistryFriendlyByteBuf) friendlyByteBuf1, type.getLocation()));
     }
 }

@@ -66,5 +66,25 @@
       <option name="name" value="LoomLocalMinecraft" />
       <option name="url" value="file:/$PROJECT_DIR$/../../../../Minecraft%20Projects/Arc/Arc%201.20.1/Arc/.gradle/loom-cache/minecraftMaven/" />
     </remote-repository>
+    <remote-repository>
+      <option name="id" value="LoomLocalMinecraft" />
+      <option name="name" value="LoomLocalMinecraft" />
+      <option name="url" value="file:/$PROJECT_DIR$/../../../../Minecraft%20Projects/Arc/Arc%201.21/ArcLib/.gradle/loom-cache/minecraftMaven/" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="LoomLocalRemappedMods" />
+      <option name="name" value="LoomLocalRemappedMods" />
+      <option name="url" value="file:/$PROJECT_DIR$/../../../../Minecraft%20Projects/Arc/Arc%201.21/ArcLib/.gradle/loom-cache/remapped_mods/" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="NeoForged" />
+      <option name="name" value="NeoForged" />
+      <option name="url" value="https://maven.neoforged.net/releases" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="Xander Maven" />
+      <option name="name" value="Xander Maven" />
+      <option name="url" value="https://maven.isxander.dev/releases" />
+    </remote-repository>
   </component>
 </project>

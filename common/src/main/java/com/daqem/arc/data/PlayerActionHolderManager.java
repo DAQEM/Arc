@@ -37,7 +37,7 @@ public abstract class PlayerActionHolderManager extends SimpleJsonResourceReload
         IActionHolder playerActionHolder = new PlayerActionHolder(location);
         this.playerActionHolders = ImmutableMap.of(location, playerActionHolder);
 
-        actionHolderManager.registerActionHolders(new ArrayList<>(this.playerActionHolders.values()));
+        actionHolderManager.registerActionHolders(List.of(playerActionHolder));
     }
 
     public static PlayerActionHolderManager getInstance() {

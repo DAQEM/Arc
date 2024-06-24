@@ -15,12 +15,14 @@ import com.daqem.arc.api.player.ArcServerPlayer;
 import com.daqem.arc.networking.ClientboundSyncPlayerActionHoldersPacket;
 import com.daqem.arc.player.stat.StatData;
 import com.mojang.authlib.GameProfile;
+import dev.architectury.networking.NetworkManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ClientInformation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
@@ -30,11 +32,13 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.inventory.GrindstoneMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.AirItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -237,13 +241,13 @@ public abstract class MixinServerPlayer extends Player implements ArcServerPlaye
     @Override
     public void arc$syncActionHoldersWithClient() {
         if (this.connection == null) return;
-        new ClientboundSyncPlayerActionHoldersPacket(arc$getActionHolders()).sendTo(arc$getServerPlayer());
+        NetworkManager.sendToPlayer(arc$getServerPlayer(), new ClientboundSyncPlayerActionHoldersPacket(arc$getActionHolders()));
     }
 
     @Override
-    public @NotNull ItemStack eat(@NotNull Level level, @NotNull ItemStack itemStack) {
+    public @NotNull ItemStack eat(Level level, ItemStack itemStack, FoodProperties foodProperties) {
         PlayerEvents.onPlayerEat(this, itemStack);
-        return super.eat(level, itemStack);
+        return super.eat(level, itemStack, foodProperties);
     }
 
     @Override
@@ -441,9 +445,9 @@ public abstract class MixinServerPlayer extends Player implements ArcServerPlaye
     }
 
     @Inject(at = @At("HEAD"), method = "triggerRecipeCrafted")
-    public void mixinTriggerRecipeCrafted(Recipe<?> recipe, List<ItemStack> list, CallbackInfo ci) {
+    public void mixinTriggerRecipeCrafted(RecipeHolder<?> recipeHolder, List<ItemStack> list, CallbackInfo ci) {
         Level level = level();
-        PlayerEvents.onCraftItem(this, recipe, recipe.getResultItem(level.registryAccess()), level);
+        PlayerEvents.onCraftItem(this, recipeHolder.value(), recipeHolder.value().getResultItem(level.registryAccess()), level);
     }
 
     @Inject(at = @At("TAIL"), method = "restoreFrom(Lnet/minecraft/server/level/ServerPlayer;Z)V")
@@ -467,8 +471,8 @@ public abstract class MixinServerPlayer extends Player implements ArcServerPlaye
         }
     }
 
-    @Inject(at = @At("TAIL"), method = "readAdditionalSaveData(Lnet/minecraft/nbt/CompoundTag;)V")
-    public void readAdditionalSaveData(CompoundTag compoundTag, CallbackInfo ci) {
+    @Inject(at = @At("TAIL"), method = "<init>")
+    public void readAdditionalSaveData(MinecraftServer minecraftServer, ServerLevel serverLevel, GameProfile gameProfile, ClientInformation clientInformation, CallbackInfo ci) {
         if (((ServerPlayer) (Object) this) instanceof ArcPlayer arcPlayer) {
             arcPlayer.arc$addActionHolders(PlayerActionHolderManager.getInstance().getPlayerActionHoldersList());
         }

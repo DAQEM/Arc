@@ -8,7 +8,7 @@ import com.daqem.arc.api.action.type.IActionType;
 import com.daqem.arc.api.condition.ICondition;
 import com.daqem.arc.api.reward.IReward;
 import com.google.gson.JsonObject;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.List;
@@ -32,12 +32,12 @@ public class HurtPlayerAction extends AbstractAction {
         }
 
         @Override
-        public HurtPlayerAction fromNetwork(ResourceLocation location, FriendlyByteBuf friendlyByteBuf, ResourceLocation actionHolderLocation, IActionHolderType<?> actionHolderType, boolean performOnClient, List<IReward> rewards, List<ICondition> conditions) {
+        public HurtPlayerAction fromNetwork(ResourceLocation location, RegistryFriendlyByteBuf friendlyByteBuf, ResourceLocation actionHolderLocation, IActionHolderType<?> actionHolderType, boolean performOnClient, List<IReward> rewards, List<ICondition> conditions) {
             return new HurtPlayerAction(location, actionHolderLocation, actionHolderType, performOnClient, rewards, conditions);
         }
 
         @Override
-        public void toNetwork(FriendlyByteBuf friendlyByteBuf, HurtPlayerAction type) {
+        public void toNetwork(RegistryFriendlyByteBuf friendlyByteBuf, HurtPlayerAction type) {
             IActionSerializer.super.toNetwork(friendlyByteBuf, type);
         }
     }

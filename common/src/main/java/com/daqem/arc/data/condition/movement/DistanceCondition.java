@@ -8,7 +8,7 @@ import com.daqem.arc.api.condition.type.ConditionType;
 import com.daqem.arc.api.condition.type.IConditionType;
 import com.daqem.arc.api.player.ArcServerPlayer;
 import com.google.gson.JsonObject;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
@@ -63,14 +63,14 @@ public class DistanceCondition extends AbstractCondition {
         }
 
         @Override
-        public DistanceCondition fromNetwork(ResourceLocation location, FriendlyByteBuf friendlyByteBuf, boolean inverted) {
+        public DistanceCondition fromNetwork(ResourceLocation location, RegistryFriendlyByteBuf friendlyByteBuf, boolean inverted) {
             return new DistanceCondition(
                     inverted,
                     friendlyByteBuf.readVarInt());
         }
 
         @Override
-        public void toNetwork(FriendlyByteBuf friendlyByteBuf, DistanceCondition type) {
+        public void toNetwork(RegistryFriendlyByteBuf friendlyByteBuf, DistanceCondition type) {
             IConditionSerializer.super.toNetwork(friendlyByteBuf, type);
             friendlyByteBuf.writeVarInt(type.distanceInBlocks);
         }

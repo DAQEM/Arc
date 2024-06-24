@@ -31,24 +31,15 @@ configurations {
     developmentForge.extendsFrom common
 }
 
-repositories {
-    maven {
-        url "https://cursemaven.com"
-        content {
-            includeGroup "curse.maven"
-        }
-    }
-}
-
 dependencies {
-    forge "net.minecraftforge:forge:${project.forge_version}"
+    forge "net.minecraftforge:forge:${project.neoforge_version}"
     // Remove the next line if you don't want to depend on the API
     modApi "dev.architectury:architectury-forge:${project.architectury_version}"
 
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
     shadowCommon(project(path: ":common", configuration: "transformProductionForge")) { transitive = false }
 
-    modImplementation "curse.maven:supermartijn642s-config-lib-438332:${project.config_library_file_forge}"
+    modImplementation "curse.maven:yacl-667299:${project.config_library_file_forge}"
     modImplementation "curse.maven:ui-933200:${project.ui_library_file_forge}"
 }
 
@@ -58,7 +49,7 @@ processResources {
     inputs.property "architectury_version", rootProject.architectury_version
     inputs.property "config_library_version", project.config_library_version
     inputs.property "ui_library_version", project.ui_library_version
-    inputs.property "forge_loader_version", project.forge_loader_version
+    inputs.property "neoforge_loader_version", project.neoforge_loader_version
 
     filesMatching("META-INF/mods.toml") {
         expand ([
@@ -67,7 +58,7 @@ processResources {
                 "architectury_version": rootProject.architectury_version,
                 "config_library_version": project.config_library_version,
                 "ui_library_version": project.ui_library_version,
-                "forge_loader_version": project.forge_loader_version
+                neoforge_loader_version: project.neoforge_loader_version
         ])
     }
 }

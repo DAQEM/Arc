@@ -8,7 +8,7 @@ import com.daqem.arc.api.reward.serializer.IRewardSerializer;
 import com.daqem.arc.api.reward.type.IRewardType;
 import com.daqem.arc.api.reward.type.RewardType;
 import com.google.gson.*;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.player.Player;
 
@@ -26,8 +26,8 @@ public class RemoveEffectReward extends AbstractReward {
             Player player = actionData.getPlayer().arc$getPlayer();
             player.getActiveEffectsMap().keySet()
                     .stream()
-                    .filter(mobEffect2 -> mobEffect2.getDescriptionId()
-                            .equals(effect.getEffect().getDescriptionId()))
+                    .filter(mobEffect2 -> mobEffect2.value().getDescriptionId()
+                            .equals(effect.getEffect().value().getDescriptionId()))
                     .findFirst()
                     .ifPresent(player::removeEffect);
         }
@@ -47,12 +47,12 @@ public class RemoveEffectReward extends AbstractReward {
         }
 
         @Override
-        public RemoveEffectReward fromNetwork(FriendlyByteBuf friendlyByteBuf, double chance, int priority) {
+        public RemoveEffectReward fromNetwork(RegistryFriendlyByteBuf friendlyByteBuf, double chance, int priority) {
             return new RemoveEffectReward(chance, priority);
         }
 
         @Override
-        public void toNetwork(FriendlyByteBuf friendlyByteBuf, RemoveEffectReward type) {
+        public void toNetwork(RegistryFriendlyByteBuf friendlyByteBuf, RemoveEffectReward type) {
             IRewardSerializer.super.toNetwork(friendlyByteBuf, type);
         }
     }

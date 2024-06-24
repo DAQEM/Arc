@@ -7,7 +7,7 @@ import com.daqem.arc.api.condition.serializer.IConditionSerializer;
 import com.daqem.arc.api.condition.type.ConditionType;
 import com.daqem.arc.api.condition.type.IConditionType;
 import com.google.gson.*;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.state.BlockState;
@@ -65,14 +65,14 @@ public class CropAgeCondition extends AbstractCondition {
         }
 
         @Override
-        public CropAgeCondition fromNetwork(ResourceLocation location, FriendlyByteBuf friendlyByteBuf, boolean inverted) {
+        public CropAgeCondition fromNetwork(ResourceLocation location, RegistryFriendlyByteBuf friendlyByteBuf, boolean inverted) {
             return new CropAgeCondition(
                     inverted,
                     friendlyByteBuf.readInt());
         }
 
         @Override
-        public void toNetwork(FriendlyByteBuf friendlyByteBuf, CropAgeCondition type) {
+        public void toNetwork(RegistryFriendlyByteBuf friendlyByteBuf, CropAgeCondition type) {
             IConditionSerializer.super.toNetwork(friendlyByteBuf, type);
             friendlyByteBuf.writeInt(type.age);
         }

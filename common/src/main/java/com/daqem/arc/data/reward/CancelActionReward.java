@@ -7,7 +7,7 @@ import com.daqem.arc.api.reward.serializer.IRewardSerializer;
 import com.daqem.arc.api.reward.type.IRewardType;
 import com.daqem.arc.api.reward.type.RewardType;
 import com.google.gson.JsonObject;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 
 public class CancelActionReward extends AbstractReward {
 
@@ -33,12 +33,12 @@ public class CancelActionReward extends AbstractReward {
         }
 
         @Override
-        public CancelActionReward fromNetwork(FriendlyByteBuf friendlyByteBuf, double chance, int priority) {
+        public CancelActionReward fromNetwork(RegistryFriendlyByteBuf friendlyByteBuf, double chance, int priority) {
             return new CancelActionReward(chance, priority);
         }
 
         @Override
-        public void toNetwork(FriendlyByteBuf friendlyByteBuf, CancelActionReward type) {
+        public void toNetwork(RegistryFriendlyByteBuf friendlyByteBuf, CancelActionReward type) {
             IRewardSerializer.super.toNetwork(friendlyByteBuf, type);
         }
     }

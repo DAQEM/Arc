@@ -11,7 +11,9 @@ import com.daqem.arc.api.action.data.type.ActionDataType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockBehaviour;
@@ -25,14 +27,14 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(BlockBehaviour.BlockStateBase.class)
 public abstract class MixinBlockStateBase {
 
-    @Inject(at = @At("RETURN"), method = "use(Lnet/minecraft/world/level/Level;Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/world/InteractionHand;Lnet/minecraft/world/phys/BlockHitResult;)Lnet/minecraft/world/InteractionResult;", cancellable = true)
-    public void use(Level level, Player player, InteractionHand hand, BlockHitResult hitResult, CallbackInfoReturnable<InteractionResult> cir) {
+    @Inject(at = @At("RETURN"), method = "useItemOn", cancellable = true)
+    public void use(ItemStack itemStack, Level level, Player player, InteractionHand interactionHand, BlockHitResult blockHitResult, CallbackInfoReturnable<ItemInteractionResult> cir) {
         if (player instanceof ArcServerPlayer arcServerPlayer) {
-            if (cir.getReturnValue() == InteractionResult.CONSUME) {
-                BlockState state = level.getBlockState(hitResult.getBlockPos());
-                ActionResult actionResult = BlockEvents.onBlockInteract(arcServerPlayer, state, hitResult.getBlockPos(), level);
+            if (cir.getReturnValue() == ItemInteractionResult.CONSUME) {
+                BlockState state = level.getBlockState(blockHitResult.getBlockPos());
+                ActionResult actionResult = BlockEvents.onBlockInteract(arcServerPlayer, state, blockHitResult.getBlockPos(), level);
                 if (actionResult.shouldCancelAction()) {
-                    cir.setReturnValue(InteractionResult.FAIL);
+                    cir.setReturnValue(ItemInteractionResult.FAIL);
                 }
             }
         }

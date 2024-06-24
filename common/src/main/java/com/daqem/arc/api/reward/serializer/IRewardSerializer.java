@@ -4,7 +4,7 @@ import com.daqem.arc.api.reward.IReward;
 import com.daqem.arc.data.serializer.ArcSerializer;
 import com.daqem.arc.registry.ArcRegistry;
 import com.google.gson.JsonObject;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
 
@@ -12,9 +12,9 @@ public interface IRewardSerializer<T extends IReward> extends ArcSerializer {
 
     T fromJson(JsonObject jsonObject, double chance, int priority);
 
-    T fromNetwork(FriendlyByteBuf friendlyByteBuf, double chance, int priority);
+    T fromNetwork(RegistryFriendlyByteBuf friendlyByteBuf, double chance, int priority);
 
-    static IReward fromNetwork(FriendlyByteBuf friendlyByteBuf) {
+    static IReward fromNetwork(RegistryFriendlyByteBuf friendlyByteBuf) {
         ResourceLocation resourceLocation = friendlyByteBuf.readResourceLocation();
         ResourceLocation resourceLocation2 = friendlyByteBuf.readResourceLocation();
         return ArcRegistry.REWARD.getOptional(resourceLocation).orElseThrow(
@@ -22,7 +22,7 @@ public interface IRewardSerializer<T extends IReward> extends ArcSerializer {
         ).getSerializer().fromNetwork(resourceLocation2, friendlyByteBuf);
     }
 
-    static <T extends IReward> void toNetwork(T reward, FriendlyByteBuf friendlyByteBuf, ResourceLocation location) {
+    static <T extends IReward> void toNetwork(T reward, RegistryFriendlyByteBuf friendlyByteBuf, ResourceLocation location) {
         friendlyByteBuf.writeResourceLocation(ArcRegistry.REWARD.getKey(reward.getType()));
         friendlyByteBuf.writeResourceLocation(location);
         ((IRewardSerializer<T>)reward.getSerializer()).toNetwork(friendlyByteBuf, reward);
@@ -33,11 +33,11 @@ public interface IRewardSerializer<T extends IReward> extends ArcSerializer {
         return fromJson(jsonObject, GsonHelper.getAsDouble(jsonObject, "chance", 100D), GsonHelper.getAsInt(jsonObject, "priority", 1));
     }
 
-    default T fromNetwork(ResourceLocation location, FriendlyByteBuf friendlyByteBuf) {
+    default T fromNetwork(ResourceLocation location, RegistryFriendlyByteBuf friendlyByteBuf) {
         return fromNetwork(friendlyByteBuf, friendlyByteBuf.readDouble(), friendlyByteBuf.readInt());
     }
 
-    default void toNetwork(FriendlyByteBuf friendlyByteBuf, T type) {
+    default void toNetwork(RegistryFriendlyByteBuf friendlyByteBuf, T type) {
         friendlyByteBuf.writeDouble(type.getChance());
         friendlyByteBuf.writeInt(type.getPriority());
     }
