@@ -50,9 +50,11 @@ public class ActionScreen extends AbstractScreen {
     private void startComponents() {
         arrowLeftComponent.setOnClickEvent((clickedObject, screen, mouseX, mouseY, button) -> {
             moveToPreviousActionComponent();
+            return true;
         });
         arrowRightComponent.setOnClickEvent((clickedObject, screen, mouseX, mouseY, button) -> {
             moveToNextActionComponent();
+            return true;
         });
         addComponents(actionComponent, arrowLeftComponent, arrowRightComponent);
         positionComponents();

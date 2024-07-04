@@ -64,6 +64,7 @@ public class ActionHoldersScreen extends AbstractScreen {
                             } else {
                                 minecraft.setScreen(new ActionScreen(actions, actions.get(0)));
                             }
+                            return true;
                         };
                     }
                 }).collect(Collectors.toList()));
