@@ -13,6 +13,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.GsonHelper;
@@ -31,6 +32,11 @@ public class CommandReward extends AbstractReward {
     @Override
     public IRewardType<?> getType() {
         return RewardType.COMMAND;
+    }
+
+    @Override
+    public Component getDescription() {
+        return getDescription(command);
     }
 
     @Override

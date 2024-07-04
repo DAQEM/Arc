@@ -1,5 +1,6 @@
 {
   "arc.screen.action": "Action Screen",
+  "arc.message.no_actions": "No actions found.",
   "arc.action.on_swim": "On Swim",
   "arc.action.description.on_swim": "Fires when the player is swimming.",
   "arc.action.on_swim_start": "On Start Swimming",
@@ -126,6 +127,8 @@
   "arc.reward.description.exp_multiplier": "Multiplies the amount of experience points dropped by %s.",
   "arc.reward.damage_multiplier": "Damage Multiplier",
   "arc.reward.description.damage_multiplier": "Multiplies the amount of damage taken by %s.",
+  "arc.reward.command": "Command",
+  "arc.reward.description.command": "Runs the command '%s'.",
   "arc.condition.or": "Or",
   "arc.condition.description.or": "Is met if any of the condition(s) are met.",
   "arc.condition.not": "Not",

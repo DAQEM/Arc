@@ -36,7 +36,9 @@ public abstract class AbstractTabComponent extends ButtonComponent {
         setOnClickEvent((button, screen, mouseY, mouseX, delta) -> {
             if (getParent() instanceof ActionComponent actionComponent) {
                 actionComponent.selectTab(this);
+                return true;
             }
+            return false;
         });
 
         super.startRenderable();

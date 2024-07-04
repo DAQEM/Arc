@@ -17,21 +17,33 @@ public class ScrollItemComponent extends ButtonComponent {
     private final static int HEIGHT = (FONT.lineHeight + PADDING) * 2 + TEXT_SPACING;
     private final static int WIDTH = 144;
 
-    private final TruncatedText name;
-    private final TruncatedText description;
+    private final Component name;
+    private final Component description;
+
+    private final TruncatedText nameText;
+    private final TruncatedText descriptionText;
 
     public ScrollItemComponent(Component name, Component description) {
         super(Textures.SCROLL_BAR_BACKGROUND, 0, 0, WIDTH, HEIGHT);
-        this.name = new TruncatedText(FONT, name, PADDING, PADDING, WIDTH - (PADDING * 2), FONT.lineHeight);
-        this.description = new TruncatedText(FONT, description, PADDING, PADDING + FONT.lineHeight + TEXT_SPACING, WIDTH - (PADDING * 2), FONT.lineHeight);
+        this.name = name;
+        this.description = description;
+        this.nameText = new TruncatedText(FONT, name, PADDING, PADDING, WIDTH - (PADDING * 2), FONT.lineHeight);
+        this.descriptionText = new TruncatedText(FONT, description, PADDING, PADDING + FONT.lineHeight + TEXT_SPACING, WIDTH - (PADDING * 2), FONT.lineHeight);
 
-        this.description.setTextColor(ChatFormatting.DARK_GRAY);
+        this.descriptionText.setTextColor(ChatFormatting.DARK_GRAY);
     }
 
     @Override
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float delta) {
         super.render(guiGraphics, mouseX, mouseY, delta);
-        name.renderBase(guiGraphics, mouseX, mouseY, delta);
-        description.renderBase(guiGraphics, mouseX, mouseY, delta);
+        nameText.renderBase(guiGraphics, mouseX, mouseY, delta);
+        descriptionText.renderBase(guiGraphics, mouseX, mouseY, delta);
+    }
+
+    @Override
+    public void renderTooltips(GuiGraphics guiGraphics, int mouseX, int mouseY, float delta) {
+        if (isTotalHovered(mouseX, mouseY)) {
+            guiGraphics.renderTooltip(FONT, this.description, mouseX, mouseY);
+        }
     }
 }
