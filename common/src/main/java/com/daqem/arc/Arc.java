@@ -56,6 +56,6 @@ public class Arc {
     }
 
     public static boolean isDebugEnvironment() {
-        return ArcCommonConfig.DEBUG;
+        return ArcCommonConfig.isDebug.get();
     }
 }

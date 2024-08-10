@@ -15,6 +15,7 @@ import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -35,7 +36,7 @@ public abstract class MixinItemStack {
     private void finishUsingItem(Level level, LivingEntity entity, CallbackInfoReturnable<ItemStack> cir) {
         if (entity instanceof ArcServerPlayer player) {
             if (this.getUseAnimation() == UseAnim.DRINK) {
-                PlayerEvents.onPlayerDrink(player, getItemStack());
+                PlayerEvents.onPlayerDrink(player, arc$getItemStack());
             }
         }
     }
@@ -43,7 +44,7 @@ public abstract class MixinItemStack {
     @Inject(at = @At(value = "HEAD"), method = "hurtAndBreak(ILnet/minecraft/server/level/ServerLevel;Lnet/minecraft/server/level/ServerPlayer;Ljava/util/function/Consumer;)V", cancellable = true)
     private void hurtAndBreak(int i, ServerLevel serverLevel, ServerPlayer serverPlayer, Consumer<Item> consumer, CallbackInfo ci) {
         if (serverPlayer instanceof ArcServerPlayer player) {
-            ItemStack copy = getItemStack().copy();
+            ItemStack copy = arc$getItemStack().copy();
             if (copy.isDamageableItem()) {
                 if (!serverPlayer.hasInfiniteMaterials()) {
                     if (i > 0) {
@@ -56,7 +57,7 @@ public abstract class MixinItemStack {
                     int j = copy.getDamageValue() + i;
                     copy.setDamageValue(j);
                     if (j >= copy.getMaxDamage()) {
-                        ActionResult actionResult = PlayerEvents.onPlayerHurtItem(player, getItemStack());
+                        ActionResult actionResult = PlayerEvents.onPlayerHurtItem(player, arc$getItemStack());
                         if (actionResult.shouldCancelAction()) {
                             ci.cancel();
                         }
@@ -66,7 +67,8 @@ public abstract class MixinItemStack {
         }
     }
 
-    private ItemStack getItemStack() {
+    @Unique
+    private ItemStack arc$getItemStack() {
         return (ItemStack) (Object) this;
     }
 }

@@ -40,6 +40,12 @@ versionRange = "[${ui_library_version},)"
 ordering = "NONE"
 side = "CLIENT"
 
+[[dependencies."${mod_id}"]]
+modId = "supermartijn642configlib"
+type = "required"
+versionRange = "[${config_library_version},)"
+ordering = "AFTER"
+side = "BOTH"
 
 [[mixins]]
 config = "arc-common.mixins.json"
