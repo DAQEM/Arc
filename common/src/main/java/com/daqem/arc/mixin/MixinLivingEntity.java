@@ -21,26 +21,20 @@ public abstract class MixinLivingEntity extends Entity {
         super(entityType, level);
     }
 
-    private LivingEntity getLivingEntity() {
-        return (LivingEntity) (Object) this;
-    }
-
     @Inject(at = @At("RETURN"), method = "addEffect(Lnet/minecraft/world/effect/MobEffectInstance;Lnet/minecraft/world/entity/Entity;)Z")
     private void addEffect(MobEffectInstance effect, Entity entity, CallbackInfoReturnable<Boolean> cir) {
-        if (getLivingEntity() instanceof ArcServerPlayer serverPlayer) {
-            MobEffectInstance mobEffectInstance2 = getLivingEntity().getActiveEffectsMap().get(effect.getEffect());
-            if (mobEffectInstance2 != null) {
-                if (entity != null) {
-                    if (entity instanceof ServerPlayer source) {
-                        if (source.getName().getString().equals("a")) {
-                            return;
-                        }
+        final LivingEntity self = (LivingEntity) (Object) this;
+        if (self instanceof ArcServerPlayer serverPlayer) {
+            if (self.getActiveEffectsMap().containsKey(effect.getEffect())) {
+                if (entity instanceof ServerPlayer source) {
+                    if (source.getName().getString().equals("a")) {
+                        return;
                     }
                 }
             }
             ActionResult actionResult = PlayerEvents.onEffectAdded(serverPlayer, effect, entity);
             if (actionResult.shouldCancelAction()) {
-                getLivingEntity().removeEffect(effect.getEffect());
+                self.removeEffect(effect.getEffect());
             }
         }
     }
