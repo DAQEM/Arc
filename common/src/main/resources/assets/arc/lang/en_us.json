@@ -184,5 +184,10 @@
   "arc.condition.entity_in_block": "Entity In Block",
   "arc.condition.description.entity_in_block": "Is met if the entity is in a %s block.",
   "arc.condition.damage_source": "Damage Source",
-  "arc.condition.description.damage_source": "Is met if the damage source is %s."
+  "arc.condition.description.damage_source": "Is met if the damage source is %s.",
+  "tag.item.c.armor": "Armor",
+  "tag.item.c.boots": "Boots",
+  "tag.item.c.chestplate": "Chestplate",
+  "tag.item.c.helmet": "Helmet",
+  "tag.item.c.leggings": "Leggings"
 }

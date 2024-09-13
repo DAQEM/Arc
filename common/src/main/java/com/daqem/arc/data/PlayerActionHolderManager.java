@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public abstract class PlayerActionHolderManager extends SimpleJsonResourceReloadListener {
+public class PlayerActionHolderManager extends SimpleJsonResourceReloadListener {
 
     private static PlayerActionHolderManager instance;
     private ImmutableMap<ResourceLocation, IActionHolder> playerActionHolders = ImmutableMap.of();

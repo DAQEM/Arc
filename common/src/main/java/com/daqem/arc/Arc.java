@@ -1,6 +1,8 @@
 package com.daqem.arc;
 
 import com.daqem.arc.config.ArcCommonConfig;
+import com.daqem.arc.data.ActionManager;
+import com.daqem.arc.data.PlayerActionHolderManager;
 import com.daqem.arc.event.command.EventRegisterCommands;
 import com.daqem.arc.event.triggers.AdvancementEvents;
 import com.daqem.arc.event.triggers.BlockEvents;
@@ -14,6 +16,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.PackType;
 import org.slf4j.Logger;
 
 import java.util.HashMap;
@@ -26,8 +29,11 @@ public class Arc {
     public static final Map<BlockPos, BrewingStandData> BREWING_STANDS = new HashMap<>();
 
     public static void initCommon() {
-        registerEvents();
+        ArcCommonConfig.init();
         ArcNetworking.init();
+        registerEvents();
+        ReloadListenerRegistry.register(PackType.SERVER_DATA, new PlayerActionHolderManager());
+        ReloadListenerRegistry.register(PackType.SERVER_DATA, new ActionManager());
     }
 
     private static void registerEvents() {
