@@ -187,7 +187,7 @@
   "arc.condition.description.damage_source": "Is met if the damage source is %s.",
   "tag.item.c.armor": "Armor",
   "tag.item.c.boots": "Boots",
-  "tag.item.c.chestplate": "Chestplate",
-  "tag.item.c.helmet": "Helmet",
+  "tag.item.c.chestplates": "Chestplates",
+  "tag.item.c.helmets": "Helmets",
   "tag.item.c.leggings": "Leggings"
 }
