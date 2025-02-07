@@ -2,6 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/common/Arc 1.20.1.Arc_Lib_1.20.1.common.iml" filepath="$PROJECT_DIR$/.idea/modules/common/Arc 1.20.1.Arc_Lib_1.20.1.common.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/common/Arc 1.20.1.Arc_Lib_1.20.1.common.main~1.iml" filepath="$PROJECT_DIR$/.idea/modules/common/Arc 1.20.1.Arc_Lib_1.20.1.common.main~1.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/common/Arc 1.20.1.Arc_Lib_1.20.1.common.test~1.iml" filepath="$PROJECT_DIR$/.idea/modules/common/Arc 1.20.1.Arc_Lib_1.20.1.common.test~1.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/common/Arc.common.iml" filepath="$PROJECT_DIR$/.idea/modules/common/Arc.common.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/common/Arc.common.main.iml" filepath="$PROJECT_DIR$/.idea/modules/common/Arc.common.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/common/Arc.common.test.iml" filepath="$PROJECT_DIR$/.idea/modules/common/Arc.common.test.iml" />
@@ -23,6 +26,10 @@
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/fabric/com.daqem.Arc_Lib_1.20.1.fabric.test.iml" filepath="$PROJECT_DIR$/.idea/modules/fabric/com.daqem.Arc_Lib_1.20.1.fabric.test.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/forge/com.daqem.Arc_Lib_1.20.1.forge.main.iml" filepath="$PROJECT_DIR$/.idea/modules/forge/com.daqem.Arc_Lib_1.20.1.forge.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/forge/com.daqem.Arc_Lib_1.20.1.forge.test.iml" filepath="$PROJECT_DIR$/.idea/modules/forge/com.daqem.Arc_Lib_1.20.1.forge.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/fabric/fabric.Arc_Lib_1.20.1.fabric.main.iml" filepath="$PROJECT_DIR$/.idea/modules/fabric/fabric.Arc_Lib_1.20.1.fabric.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/fabric/fabric.Arc_Lib_1.20.1.fabric.test.iml" filepath="$PROJECT_DIR$/.idea/modules/fabric/fabric.Arc_Lib_1.20.1.fabric.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/forge/forge.Arc_Lib_1.20.1.forge.main.iml" filepath="$PROJECT_DIR$/.idea/modules/forge/forge.Arc_Lib_1.20.1.forge.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/forge/forge.Arc_Lib_1.20.1.forge.test.iml" filepath="$PROJECT_DIR$/.idea/modules/forge/forge.Arc_Lib_1.20.1.forge.test.iml" />
     </modules>
   </component>
 </project>

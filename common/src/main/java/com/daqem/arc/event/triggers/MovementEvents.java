@@ -4,6 +4,7 @@ import com.daqem.arc.api.action.type.ActionType;
 import com.daqem.arc.api.player.ArcServerPlayer;
 import com.daqem.arc.api.action.data.ActionDataBuilder;
 import com.daqem.arc.api.action.data.type.ActionDataType;
+import com.daqem.arc.mixin.MixinServerPlayer;
 
 public class MovementEvents {
 
@@ -98,6 +99,25 @@ public class MovementEvents {
 
     public static void onStartElytraFlying(ArcServerPlayer player) {
         new ActionDataBuilder(player, ActionType.ELYTRA_FLY_START)
+                .build()
+                .sendToAction();
+    }
+
+    public static void onHorseRide(ArcServerPlayer player, int ridingDistanceInCm) {
+        new ActionDataBuilder(player, ActionType.HORSE_RIDE)
+                .withData(ActionDataType.DISTANCE_IN_CM, ridingDistanceInCm)
+                .build()
+                .sendToAction();
+    }
+
+    public static void onStopHorseRiding(ArcServerPlayer player) {
+        new ActionDataBuilder(player, ActionType.HORSE_RIDE_STOP)
+                .build()
+                .sendToAction();
+    }
+
+    public static void onStartHorseRiding(ArcServerPlayer player) {
+        new ActionDataBuilder(player, ActionType.HORSE_RIDE_START)
                 .build()
                 .sendToAction();
     }

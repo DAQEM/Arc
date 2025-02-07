@@ -40,6 +40,7 @@ public interface ArcServerPlayer extends ArcPlayer {
     boolean arc$isElytraFlying();
     float arc$getElytraFlyingDistance();
     boolean arc$isGrinding();
+    boolean arc$isHorseRiding();
 
     void arc$syncActionHoldersWithClient();
 }
