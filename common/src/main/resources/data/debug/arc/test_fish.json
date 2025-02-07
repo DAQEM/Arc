@@ -9,5 +9,11 @@
       "type": "arc:command",
       "command": "give %player% minecraft:dirt 1"
     }
+  ],
+  "conditions": [
+    {
+      "type": "arc:item",
+      "item": "minecraft:cod"
+    }
   ]
 }
