@@ -31,6 +31,9 @@ public interface ActionType<T extends IAction> extends IActionType<T> {
     ActionType<ElytraFlyAction> ELYTRA_FLY = register(Arc.getId("on_elytra_fly"), new ElytraFlyAction.Serializer());
     ActionType<ElytraFlyStartAction> ELYTRA_FLY_START = register(Arc.getId("on_elytra_fly_start"), new ElytraFlyStartAction.Serializer());
     ActionType<ElytraFlyStopAction> ELYTRA_FLY_STOP = register(Arc.getId("on_elytra_fly_stop"), new ElytraFlyStopAction.Serializer());
+    ActionType<HorseRideAction> HORSE_RIDE = register(Arc.getId("on_horse_ride"), new HorseRideAction.Serializer());
+    ActionType<HorseRideStartAction> HORSE_RIDE_START = register(Arc.getId("on_horse_ride_start"), new HorseRideStartAction.Serializer());
+    ActionType<HorseRideStopAction> HORSE_RIDE_STOP = register(Arc.getId("on_horse_ride_stop"), new HorseRideStopAction.Serializer());
 
     ActionType<PlaceBlockAction> PLACE_BLOCK = register(Arc.getId("on_place_block"), new PlaceBlockAction.Serializer());
     ActionType<BreakBlockAction> BREAK_BLOCK = register(Arc.getId("on_break_block"), new BreakBlockAction.Serializer());

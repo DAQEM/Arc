@@ -30,6 +30,7 @@ import net.minecraft.stats.Stat;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.animal.horse.Horse;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.food.FoodProperties;
@@ -86,6 +87,10 @@ public abstract class MixinServerPlayer extends Player implements ArcServerPlaye
     private float arc$elytraFlyingDistance = 0;
     @Unique
     private boolean arc$isGrinding = false;
+    @Unique
+    public boolean arc$isHorseRiding = false;
+    @Unique
+    public float arc$horseRidingDistance = 0;
 
     public MixinServerPlayer(Level level, BlockPos blockPos, float yaw, GameProfile gameProfile) {
         super(level, blockPos, yaw, gameProfile);
@@ -239,6 +244,11 @@ public abstract class MixinServerPlayer extends Player implements ArcServerPlaye
     }
 
     @Override
+    public boolean arc$isHorseRiding() {
+        return this.arc$isHorseRiding;
+    }
+
+    @Override
     public void arc$syncActionHoldersWithClient() {
         if (this.connection == null) return;
         NetworkManager.sendToPlayer(arc$getServerPlayer(), new ClientboundSyncPlayerActionHoldersPacket(arc$getActionHolders()));
@@ -311,6 +321,27 @@ public abstract class MixinServerPlayer extends Player implements ArcServerPlaye
             } else if (this.isSprinting()) {
                 this.arc$isSprinting = true;
                 MovementEvents.onStartSprinting(this);
+            }
+        }
+
+        if (this.arc$isHorseRiding && this.getRootVehicle() instanceof Horse horse && horse.isSaddled() && horse.isTamed()) {
+            boolean isCurrentlyRiding = horse.walkDist > this.arc$horseRidingDistance;
+            float horseRidingDistance = horse.walkDist - this.arc$horseRidingDistance;
+            if (isCurrentlyRiding) {
+                this.arc$horseRidingDistance += horseRidingDistance;
+                MovementEvents.onHorseRide(this, (int) (this.arc$horseRidingDistance * 100));
+            }
+        } else {
+            if (this.arc$isHorseRiding) {
+                this.arc$isHorseRiding = false;
+                MovementEvents.onStopHorseRiding(this);
+            } else {
+                if (this.getRootVehicle() instanceof Horse horse && horse.isSaddled() && horse.isTamed()) {
+                    this.arc$isHorseRiding = true;
+                    this.arc$horseRidingDistance = 0;
+                    horse.walkDist = 0;
+                    MovementEvents.onStartHorseRiding(this);
+                }
             }
         }
 
@@ -468,6 +499,7 @@ public abstract class MixinServerPlayer extends Player implements ArcServerPlaye
             this.arc$isElytraFlying = arcServerPlayer.arc$isElytraFlying();
             this.arc$elytraFlyingDistance = arcServerPlayer.arc$getElytraFlyingDistance();
             this.arc$isGrinding = arcServerPlayer.arc$isGrinding();
+            this.arc$isHorseRiding = arcServerPlayer.arc$isHorseRiding();
         }
     }
 
