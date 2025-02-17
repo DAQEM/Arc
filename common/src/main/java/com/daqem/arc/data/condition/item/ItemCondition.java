@@ -50,7 +50,7 @@ public class ItemCondition extends AbstractCondition {
         public ItemCondition fromJson(ResourceLocation location, JsonObject jsonObject, boolean inverted) {
             return new ItemCondition(
                     inverted,
-                    getItemStack(jsonObject, "item"));
+                    getItemStack(jsonObject.get("item")));
         }
 
         @Override

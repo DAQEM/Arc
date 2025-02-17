@@ -43,7 +43,7 @@ public class ItemInInventoryCondition extends AbstractCondition {
         public ItemInInventoryCondition fromJson(ResourceLocation location, JsonObject jsonObject, boolean inverted) {
             return new ItemInInventoryCondition(
                     inverted,
-                    getItemStack(jsonObject, "item"));
+                    getItemStack(jsonObject.get("item")));
         }
 
         @Override

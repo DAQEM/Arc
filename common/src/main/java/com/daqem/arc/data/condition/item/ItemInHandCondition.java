@@ -47,7 +47,7 @@ public class ItemInHandCondition extends AbstractCondition {
         public ItemInHandCondition fromJson(ResourceLocation location, JsonObject jsonObject, boolean inverted) {
             return new ItemInHandCondition(
                     inverted,
-                    getItemStack(jsonObject, "item"),
+                    getItemStack(jsonObject.get("item")),
                     getHand(jsonObject, "hand"));
         }
 
