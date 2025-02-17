@@ -47,10 +47,6 @@ public interface ArcSerializer {
         return new ElementConverter<>(BuiltInRegistries.ITEM).convertToElement(getString(jsonObject, elementName));
     }
 
-    default ItemStack getItemStack(JsonObject jsonObject, String elementName){
-        return new ItemStack(getItem(jsonObject, elementName));
-    }
-
     default Block getBlock(JsonObject jsonObject, String elementName){
         return new ElementConverter<>(BuiltInRegistries.BLOCK).convertToElement(getString(jsonObject, elementName));
     }

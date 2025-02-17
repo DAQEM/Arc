@@ -47,7 +47,7 @@ public class ItemReward extends AbstractReward {
 
         @Override
         public ItemReward fromJson(JsonObject jsonObject, double chance, int priority) {
-            ItemStack itemStack = getItemStack(jsonObject, "item");
+            ItemStack itemStack = getItemStack(jsonObject.get("item"));
             int amount = GsonHelper.getAsInt(jsonObject, "amount", 1);
             itemStack.setCount(amount);
             return new ItemReward(chance, priority, itemStack, amount);
