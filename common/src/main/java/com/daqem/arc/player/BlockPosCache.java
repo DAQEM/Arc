@@ -1,5 +1,6 @@
 package com.daqem.arc.player;
 
+import com.daqem.arc.config.ArcCommonConfig;
 import net.minecraft.core.Vec3i;
 
 import java.util.HashSet;
@@ -8,7 +9,6 @@ import java.util.Queue;
 import java.util.Set;
 
 public class BlockPosCache {
-    private static final int MAX_SIZE = 10_000;
     private final Set<Vec3i> positionSet = new HashSet<>();
     private final Queue<Vec3i> positionQueue = new LinkedList<>();
 
@@ -17,7 +17,7 @@ public class BlockPosCache {
             return; // Avoid duplicate entries
         }
 
-        if (positionQueue.size() >= MAX_SIZE) {
+        if (positionQueue.size() >= ArcCommonConfig.maxBlockPosCacheSize.get()) {
             Vec3i oldest = positionQueue.poll(); // Remove first added element
             if (oldest != null) {
                 positionSet.remove(oldest);
