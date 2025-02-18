@@ -7,6 +7,7 @@ import com.daqem.arc.data.condition.NotCondition;
 import com.daqem.arc.data.condition.OrCondition;
 import com.daqem.arc.data.condition.block.BlockCondition;
 import com.daqem.arc.data.condition.block.BlocksCondition;
+import com.daqem.arc.data.condition.block.NotInBlockPosCacheCondition;
 import com.daqem.arc.data.condition.block.crop.CropAgeCondition;
 import com.daqem.arc.data.condition.block.crop.CropFullyGrownCondition;
 import com.daqem.arc.data.condition.block.ore.IsOreCondition;
@@ -59,6 +60,7 @@ public interface ConditionType<T extends ICondition> extends IConditionType<T> {
     ConditionType<BlockHardnessCondition> BLOCK_HARDNESS = register(Arc.getId("block_hardness"), new BlockHardnessCondition.Serializer());
     IConditionType<EntityInBlockCondition> ENTITY_IN_BLOCK = register(Arc.getId("entity_in_block"), new EntityInBlockCondition.Serializer());
     IConditionType<DamageSourceCondition> DAMAGE_SOURCE = register(Arc.getId("damage_source"), new DamageSourceCondition.Serializer());
+    IConditionType<NotInBlockPosCacheCondition> NOT_IN_BLOCK_POS_CACHE = register(Arc.getId("not_in_block_pos_cache"), new NotInBlockPosCacheCondition.Serializer());
 
     static <T extends ICondition> ConditionType<T> register(final ResourceLocation location, final IConditionSerializer<T> serializer) {
         return Registry.register(ArcRegistry.CONDITION, location, new ConditionType<T>(){

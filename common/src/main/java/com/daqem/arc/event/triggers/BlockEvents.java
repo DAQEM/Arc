@@ -34,6 +34,7 @@ public class BlockEvents {
                         return EventResult.interruptFalse();
                     }
                 }
+                arcServerPlayer.arc$getBlockPosCache().add(pos);
             }
             return EventResult.pass();
         });

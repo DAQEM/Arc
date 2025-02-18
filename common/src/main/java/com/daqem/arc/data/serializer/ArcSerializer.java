@@ -23,6 +23,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -107,6 +108,13 @@ public interface ArcSerializer {
             throw new JsonParseException("Invalid hand, expected to find a valid hand ('MAIN_HAND' or 'OFF_HAND').");
         }
         return hand;
+    }
+
+    default @Nullable InteractionHand getOptionalHand(JsonObject jsonObject, String elementName){
+        if (jsonObject.has(elementName)) {
+            return getHand(jsonObject, elementName);
+        }
+        return null;
     }
 
     default MobEffectCategory getMobEffectCategory(JsonObject jsonObject, String elementName){

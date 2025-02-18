@@ -13,6 +13,7 @@ import com.daqem.arc.event.triggers.PlayerEvents;
 import com.daqem.arc.event.triggers.StatEvents;
 import com.daqem.arc.api.player.ArcServerPlayer;
 import com.daqem.arc.networking.ClientboundSyncPlayerActionHoldersPacket;
+import com.daqem.arc.player.BlockPosCache;
 import com.daqem.arc.player.stat.StatData;
 import com.mojang.authlib.GameProfile;
 import dev.architectury.networking.NetworkManager;
@@ -91,6 +92,8 @@ public abstract class MixinServerPlayer extends Player implements ArcServerPlaye
     public boolean arc$isHorseRiding = false;
     @Unique
     public float arc$horseRidingDistance = 0;
+    @Unique
+    public BlockPosCache arc$blockPosCache = new BlockPosCache();
 
     public MixinServerPlayer(Level level, BlockPos blockPos, float yaw, GameProfile gameProfile) {
         super(level, blockPos, yaw, gameProfile);
@@ -252,6 +255,11 @@ public abstract class MixinServerPlayer extends Player implements ArcServerPlaye
     public void arc$syncActionHoldersWithClient() {
         if (this.connection == null) return;
         NetworkManager.sendToPlayer(arc$getServerPlayer(), new ClientboundSyncPlayerActionHoldersPacket(arc$getActionHolders()));
+    }
+
+    @Override
+    public BlockPosCache arc$getBlockPosCache() {
+        return this.arc$blockPosCache;
     }
 
     @Override
