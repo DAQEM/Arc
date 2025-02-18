@@ -35,13 +35,13 @@ side = "BOTH"
 
 [[dependencies."${mod_id}"]]
 modId = "uilib"
-mandatory = true
+type = "required"
 versionRange = "[${ui_library_version},)"
 ordering = "NONE"
 side = "CLIENT"
 
 [[dependencies."${mod_id}"]]
-modId = "supermartijn642configlib"
+modId = "yamlconfig"
 type = "required"
 versionRange = "[${config_library_version},)"
 ordering = "AFTER"

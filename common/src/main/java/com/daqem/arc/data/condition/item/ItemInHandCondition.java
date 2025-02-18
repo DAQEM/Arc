@@ -11,6 +11,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
 public class ItemInHandCondition extends AbstractCondition {
@@ -32,9 +33,18 @@ public class ItemInHandCondition extends AbstractCondition {
     @Override
     public boolean isMet(ActionData actionData) {
         Player player = actionData.getPlayer().arc$getPlayer();
-        return (hand == null && player.getMainHandItem().getItem() == itemStack.getItem() || player.getOffhandItem().getItem() == itemStack.getItem())
-                || (hand != null && player.getItemInHand(hand).getItem() == itemStack.getItem());
+        Item targetItem = itemStack.getItem();
+
+        if (hand == null) {
+            // Check both hands when no specific hand is defined
+            return player.getMainHandItem().getItem() == targetItem
+                    || player.getOffhandItem().getItem() == targetItem;
+        }
+
+        // Check only the specified hand
+        return player.getItemInHand(hand).getItem() == targetItem;
     }
+
 
     @Override
     public IConditionType<?> getType() {
@@ -48,22 +58,29 @@ public class ItemInHandCondition extends AbstractCondition {
             return new ItemInHandCondition(
                     inverted,
                     getItemStack(jsonObject.get("item")),
-                    getHand(jsonObject, "hand"));
+                    getOptionalHand(jsonObject, "hand")
+            );
         }
 
         @Override
         public ItemInHandCondition fromNetwork(ResourceLocation location, RegistryFriendlyByteBuf friendlyByteBuf, boolean inverted) {
+            ItemStack itemStack = ItemStack.STREAM_CODEC.decode(friendlyByteBuf);
+            InteractionHand hand = friendlyByteBuf.readBoolean() ? friendlyByteBuf.readEnum(InteractionHand.class) : null;
             return new ItemInHandCondition(
                     inverted,
-                    ItemStack.STREAM_CODEC.decode(friendlyByteBuf),
-                    friendlyByteBuf.readEnum(InteractionHand.class));
+                    itemStack,
+                    hand
+            );
         }
 
         @Override
         public void toNetwork(RegistryFriendlyByteBuf friendlyByteBuf, ItemInHandCondition type) {
             IConditionSerializer.super.toNetwork(friendlyByteBuf, type);
             ItemStack.STREAM_CODEC.encode(friendlyByteBuf, type.itemStack);
-            friendlyByteBuf.writeEnum(type.hand);
+            friendlyByteBuf.writeBoolean(type.hand != null);
+            if (type.hand != null) {
+                friendlyByteBuf.writeEnum(type.hand);
+            }
         }
     }
 }

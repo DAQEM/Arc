@@ -2,6 +2,7 @@ package com.daqem.arc.api.player;
 
 import com.daqem.arc.api.action.holder.IActionHolder;
 import com.daqem.arc.api.condition.ICondition;
+import com.daqem.arc.player.BlockPosCache;
 import com.daqem.arc.player.stat.StatData;
 import net.minecraft.core.NonNullList;
 import net.minecraft.resources.ResourceLocation;
@@ -43,4 +44,6 @@ public interface ArcServerPlayer extends ArcPlayer {
     boolean arc$isHorseRiding();
 
     void arc$syncActionHoldersWithClient();
+
+    BlockPosCache arc$getBlockPosCache();
 }
