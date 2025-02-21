@@ -33,7 +33,7 @@ public class EffectCondition extends AbstractCondition {
     @Override
     public boolean isMet(ActionData actionData) {
         MobEffectInstance effectInstance = actionData.getData(ActionDataType.MOB_EFFECT_INSTANCE);
-        return effectInstance != null && effectInstance.getEffect() == this.effect;
+        return effectInstance != null && effectInstance.getEffect().value() == effect;
     }
 
     @Override
